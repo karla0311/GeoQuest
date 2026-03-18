@@ -2,9 +2,7 @@ import { Router } from "express";
 
 const router = Router();
 
-// POST /game/start
-// POST /game/result
-// GET  /game/daily
-// GET  /game/stage/:n
+// GET /stats/user
+// GET /stats/analytics
 
 export default router;
