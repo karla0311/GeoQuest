@@ -2,7 +2,7 @@ import { Router } from "express";
 
 const router = Router();
 
-// GET /analytics/stats
-// GET /analytics/history
+// GET /stats/user
+// GET /stats/analytics
 
 export default router;
