@@ -1,8 +1,10 @@
 export function errorHandler(err, req, res, next) {
-  console.error(err.stack);
-
   const status = err.status || 500;
-  res.status(status).json({
-    error: err.message || "Something went wrong",
-  });
+
+  if (status >= 500) {
+    console.error(err.stack);
+    return res.status(status).json({ error: "Internal server error" });
+  }
+
+  res.status(status).json({ error: err.message || "Request failed" });
 }

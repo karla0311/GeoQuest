@@ -1,17 +1,21 @@
-import jwt from "jsonwebtoken";
-import jwtConfig from "../config/jwtConfig.js";
+import supabase from "../config/supabaseClient.js";
 
-export function requireAuth(req, res, next) {
+export async function requireAuth(req, res, next) {
   const header = req.headers.authorization;
   if (!header) {
     return res.status(401).json({ error: "No token provided" });
   }
 
   const token = header.split(" ")[1];
-  try {
-    req.user = jwt.verify(token, jwtConfig.secret);
-    next();
-  } catch (err) {
-    res.status(401).json({ error: "Invalid token" });
+  if (!token) {
+    return res.status(401).json({ error: "No token provided" });
   }
+
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error || !data.user) {
+    return res.status(401).json({ error: "Invalid token" });
+  }
+
+  req.user = data.user;
+  next();
 }
