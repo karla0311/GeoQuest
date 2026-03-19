@@ -20,9 +20,14 @@ npm run dev
 
 Client runs on `http://localhost:5173`, server on `http://localhost:8000`.
 
-Create a `.env` file in the project root (not inside server/) with your Supabase credentials:
-
+Create a `server/.env` file with your Supabase credentials:
 ```
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
+
+Create a `client/.env` file with your Supabase credentials:
+```
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_anon_key
 ```
