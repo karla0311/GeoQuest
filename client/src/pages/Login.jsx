@@ -1,15 +1,21 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import API from "../api/api"
+import { useAuth } from "../context/AuthContext"
 
 export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const handleLogin = async () => {
-    const res = await API.post("/auth/login", { email, password })
-    localStorage.setItem("token", res.data.access_token)
+    const { error } = await login(email, password)
+    if (error) {
+      setError(error.message)
+    } else {
+      navigate("/dashboard")
+    }
   }
 
   return (
@@ -29,6 +35,7 @@ export default function Login() {
             placeholder="Password"
             className="border border-zinc-600 rounded-lg px-4 py-3 text-gray-200 bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-emerald-700"
           />
+          {error && <p className="text-red-400 text-sm">{error}</p>}
           <button
             onClick={handleLogin}
             className="bg-emerald-700 text-white py-3 rounded-lg text-lg hover:bg-emerald-600"
