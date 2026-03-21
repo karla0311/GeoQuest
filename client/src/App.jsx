@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -8,18 +9,25 @@ import Leaderboard from "./pages/Leaderboard";
 import Forum from "./pages/Forum";
 import Results from "./pages/Results";
 
+function ProtectedRoute({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) return <div className="min-h-screen bg-zinc-900"/>
+  if (!user) return <Navigate to="/login" />
+  return children
+}
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/game" element={<Game />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/forum" element={<Forum />} />
-        <Route path="/results" element={<Results />} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/game" element={<ProtectedRoute><Game /></ProtectedRoute>} />
+        <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+        <Route path="/forum" element={<ProtectedRoute><Forum /></ProtectedRoute>} />
+        <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );
