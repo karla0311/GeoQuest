@@ -1,9 +1,16 @@
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
+import API from "../api/api"
 
 function Dashboard() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
+  const [stats, setStats] = useState(null)
+
+  useEffect(() => {
+    API.get("/stats/user").then(res => setStats(res.data))
+  }, [])
 
   const handleLogout = async () => {
     await logout()
@@ -46,15 +53,15 @@ function Dashboard() {
         {/* Stats Row */}
         <div className="grid grid-cols-3 gap-6 mb-8">
           <div className="bg-zinc-800 rounded-xl p-6 text-center">
-            <p className="text-3xl font-bold text-white">--</p>
+            <p className="text-3xl font-bold text-white">{stats ? stats.games_played : "--"}</p>
             <p className="text-gray-400 mt-1">Games Played</p>
           </div>
           <div className="bg-zinc-800 rounded-xl p-6 text-center">
-            <p className="text-3xl font-bold text-white">--</p>
+            <p className="text-3xl font-bold text-white">{stats ? stats.avg_score : "--"}</p>
             <p className="text-gray-400 mt-1">Average Score</p>
           </div>
           <div className="bg-zinc-800 rounded-xl p-6 text-center">
-            <p className="text-3xl font-bold text-white">--</p>
+            <p className="text-3xl font-bold text-white">{stats ? `${stats.avg_accuracy}%` : "--"}</p>
             <p className="text-gray-400 mt-1">Accuracy</p>
           </div>
         </div>
