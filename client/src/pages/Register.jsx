@@ -9,6 +9,7 @@ function Register() {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState("")
+  const [registered, setRegistered] = useState(false)
 
   const handleRegister = async () => {
     if (password.length < 6) {
@@ -23,8 +24,28 @@ function Register() {
     if (error) {
       setError(error.message)
     } else {
-      navigate("/dashboard")
+      setRegistered(true)
     }
+  }
+
+  if (registered) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-zinc-900">
+        <div className="bg-zinc-800 p-8 rounded-xl w-full max-w-md text-center">
+          <div className="text-4xl mb-4">✉️</div>
+          <h2 className="text-2xl font-bold text-white mb-3">Check your email</h2>
+          <p className="text-gray-400 mb-6">
+            We sent a confirmation link to <span className="text-white">{email}</span>. Click the link to verify your account, then come back and log in.
+          </p>
+          <button
+            onClick={() => navigate("/login")}
+            className="bg-emerald-700 text-white py-3 px-6 rounded-lg text-lg hover:bg-emerald-600 w-full"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
