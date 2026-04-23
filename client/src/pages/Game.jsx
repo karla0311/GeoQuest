@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react"
+import { useNavigate } from "react-router-dom"
 import { submitGameResult } from "../api/gameService"
 
 // number of tile columns and rows (more = smaller tiles)
@@ -152,6 +153,7 @@ export default function Game() {
   const [showAll, setShowAll] = useState(false)
   const startTime = useRef(Date.now())
   const submitted = useRef(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const load = async () => {
@@ -234,9 +236,11 @@ export default function Game() {
     if (correct) {
       setWon(true)
       sendResult(true, newGuesses.length)
+      setTimeout(() => navigate("/results"), 1500)
     } else if (newGuesses.length >= MAX_GUESSES) {
       setLost(true)
       sendResult(false, newGuesses.length)
+      setTimeout(() => navigate("/results"), 1500)
     }
   }
 
