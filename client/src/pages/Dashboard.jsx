@@ -45,6 +45,12 @@ function Dashboard() {
         <div className="flex items-center gap-4">
           <span className="text-gray-300">Welcome, {user?.email ?? "Player"}</span>
           <button
+            onClick={() => navigate("/forum")}
+            className="bg-zinc-700 text-white px-4 py-2 rounded-lg hover:bg-zinc-600"
+          >
+            Go to Forum
+          </button>
+          <button
             onClick={handleLogout}
             className="px-4 py-2 border border-zinc-600 rounded-lg text-gray-300 hover:bg-zinc-700"
           >
