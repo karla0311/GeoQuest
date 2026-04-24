@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { getLastGameResult } from "../api/gameService"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import { getLastGameResult, getGameById } from "../api/gameService"
 
 // labels for each stage of a game session
 const STAGE_LABELS = {
@@ -65,17 +65,20 @@ function StageCard({ stageNum, data }) {
 // ── Results page ──────────────────────────────────────────────────────────────
 export default function Results() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const gameId = searchParams.get("id")
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState(false)
 
-  // pull the user's last game from the backend so results survive a refresh
+  // with an ?id we show that specific game, otherwise fall back to the last one
   useEffect(() => {
-    getLastGameResult()
+    const fetchResult = gameId ? getGameById(gameId) : getLastGameResult()
+    fetchResult
       .then(data => setResult(data))
       .catch(() => setFetchError(true))
       .finally(() => setLoading(false))
-  }, [])
+  }, [gameId])
 
   if (loading) {
     return (
@@ -130,6 +133,9 @@ export default function Results() {
           <p className="text-xs uppercase tracking-wider text-gray-500 mb-2">Results</p>
           <h1 className="text-4xl font-bold text-white mb-1">{totalScore}</h1>
           <p className="text-gray-400 text-sm">Total Score</p>
+          {result.country && (
+            <p className="text-emerald-400 text-base font-medium mt-3">{result.country}</p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

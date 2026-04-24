@@ -221,7 +221,7 @@ export default function Game() {
     submitted.current = true
     const time_taken = Math.round((Date.now() - startTime.current) / 1000)
     const score = didWin ? Math.max(0, (MAX_GUESSES - guessCount + 1) * 100) : 0
-    submitGameResult({ score, stage: 1, time_taken, accuracy: didWin ? 100 : 0 })
+    submitGameResult({ score, stage: 1, time_taken, accuracy: didWin ? 100 : 0, country: country.name })
       .catch(err => console.error("failed to save game result", err))
   }
 

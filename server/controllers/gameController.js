@@ -9,8 +9,17 @@ export const getLastResult = async (req, res) => {
   }
 }
 
+export const getRecentResults = async (req, res) => {
+  try {
+    const results = await gameService.getRecentResults(req.user.id)
+    res.json(results)
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch recent results" })
+  }
+}
+
 export const submitResult = async (req, res) => {
-  const { score, stage, time_taken, accuracy } = req.body
+  const { score, stage, time_taken, accuracy, country } = req.body
 
   const isValid =
     Number.isInteger(score) && score >= 0 &&
@@ -22,11 +31,40 @@ export const submitResult = async (req, res) => {
     return res.status(400).json({ error: "Invalid result data" })
   }
 
+  // country is optional but if provided has to be a reasonable string
+  if (country !== undefined) {
+    if (typeof country !== "string" || country.trim() === "" || country.length > 100) {
+      return res.status(400).json({ error: "Invalid country" })
+    }
+  }
+
   try {
     const userId = req.user.id
-    const result = await gameService.saveResult(userId, { score, stage, time_taken, accuracy })
+    const result = await gameService.saveResult(userId, {
+      score, stage, time_taken, accuracy,
+      country: country ? country.trim() : undefined,
+    })
     res.status(201).json(result)
   } catch (err) {
     res.status(500).json({ error: "Failed to save result" })
+  }
+}
+
+export const getResultById = async (req, res) => {
+  try {
+    const result = await gameService.getResultById(req.params.id, req.user.id)
+    if (!result) return res.status(404).json({ error: "Not found" })
+    res.json(result)
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch result" })
+  }
+}
+
+export const getAllResults = async (req, res) => {
+  try {
+    const results = await gameService.getAllResults(req.user.id)
+    res.json(results)
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch history" })
   }
 }

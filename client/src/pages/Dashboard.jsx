@@ -2,14 +2,33 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import API from "../api/api"
+import { getRecentGames } from "../api/gameService"
+
+// short relative timestamp for the activity feed. postgres returns played_at
+// without a timezone so we force UTC to keep the math honest across browsers
+function timeAgo(dateStr) {
+  const date = new Date(dateStr.replace(" ", "T") + "Z")
+  const diff = (Date.now() - date) / 1000
+  if (diff < 60) return "just now"
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
+  return `${Math.floor(diff / 86400)}d ago`
+}
 
 function Dashboard() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const [stats, setStats] = useState(null)
+  const [recent, setRecent] = useState([])
+  const [recentError, setRecentError] = useState(false)
 
   useEffect(() => {
     API.get("/stats/user").then(res => setStats(res.data))
+
+    // loaded separately so a stats failure doesn't blank out the activity list
+    getRecentGames()
+      .then(data => setRecent(Array.isArray(data) ? data : []))
+      .catch(() => setRecentError(true))
   }, [])
 
   const handleLogout = async () => {
@@ -72,7 +91,54 @@ function Dashboard() {
           {/* Recent Activity */}
           <div className="bg-zinc-800 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-white mb-4">Recent Activity</h3>
-            <p className="text-gray-400 text-sm">No recent games yet.</p>
+            {recentError ? (
+              <p className="text-red-400 text-sm">Couldn't load recent games.</p>
+            ) : recent.length === 0 ? (
+              <p className="text-gray-400 text-sm">No games yet. Play your first!</p>
+            ) : (
+              <>
+                <div className="flex flex-col gap-1">
+                  {recent.map((game) => {
+                    const won = game.accuracy > 0
+                    // score encodes guess count for a win: (7 - guessCount) * 100
+                    const guessCount = won ? 7 - game.score / 100 : null
+                    const label = game.country ?? "Flag Stage 1"
+
+                    return (
+                      <div
+                        key={game.id}
+                        onClick={() => navigate(`/results?id=${game.id}`)}
+                        className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer hover:bg-zinc-700 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                            won ? "bg-emerald-900 text-emerald-400" : "bg-red-900/60 text-red-400"
+                          }`}>
+                            {won ? "Won" : "Lost"}
+                          </span>
+                          <div>
+                            <p className="text-sm text-white font-medium">{label}</p>
+                            <p className="text-xs text-gray-500">
+                              {won ? `${guessCount} guess${guessCount !== 1 ? "es" : ""}` : "No guesses left"}
+                              {" · "}{game.score}pts · {game.accuracy}%
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-xs text-gray-500 flex-shrink-0">{timeAgo(game.played_at)}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="mt-3 pt-3 border-t border-zinc-700">
+                  <button
+                    onClick={() => navigate("/history")}
+                    className="text-xs text-emerald-500 hover:text-emerald-400"
+                  >
+                    View Full History →
+                  </button>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Leaderboard Preview */}

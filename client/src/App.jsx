@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import Leaderboard from "./pages/Leaderboard";
 import Forum from "./pages/Forum";
 import Results from "./pages/Results";
+import History from "./pages/History";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -28,6 +29,7 @@ function App() {
         <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
         <Route path="/forum" element={<ProtectedRoute><Forum /></ProtectedRoute>} />
         <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
+        <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );
