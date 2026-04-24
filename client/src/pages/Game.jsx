@@ -135,50 +135,55 @@ function ScatterFlag({ src, revealAmount }) {
   )
 }
 
+// cached after first load so replaying doesn't refetch
+let countryCache = null
+
 export default function Game() {
-  const testFlag = "https://flagcdn.com/w640/fr.png" // test flag
   const [guesses, setGuesses] = useState([])
   const [input, setInput] = useState("")
   const [won, setWon] = useState(false)
   const [lost, setLost] = useState(false)
-  const answer = "France" // test answer
+  const [country, setCountry] = useState(null)
+  const [countryList, setCountryList] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [fetchError, setFetchError] = useState(false)
   const [suggestions, setSuggestions] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [showAll, setShowAll] = useState(false)
   const startTime = useRef(Date.now())
   const submitted = useRef(false)
 
-  const countries = [
-    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia",
-    "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados",
-    "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina",
-    "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia",
-    "Cameroon", "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China",
-    "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus",
-    "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador",
-    "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini",
-    "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany",
-    "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana",
-    "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq",
-    "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya",
-    "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia",
-    "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia",
-    "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico",
-    "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique",
-    "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua",
-    "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan",
-    "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland",
-    "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis",
-    "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino",
-    "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles",
-    "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia",
-    "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan",
-    "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania",
-    "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia",
-    "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates",
-    "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City",
-    "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
-  ]
+  useEffect(() => {
+    const load = async () => {
+      try {
+        let data = countryCache
+        if (!data) {
+          const res = await fetch(
+            "https://restcountries.com/v3.1/all?fields=name,flags,cca2"
+          )
+          if (!res.ok) throw new Error("fetch failed")
+          data = await res.json()
+          // drop entries missing a flag or common name (Antarctic territories etc.)
+          data = data.filter(c => c.flags?.png && c.name?.common)
+          countryCache = data
+        }
+
+        const names = data
+          .map(c => c.name.common)
+          .sort((a, b) => a.localeCompare(b))
+
+        const picked = data[Math.floor(Math.random() * data.length)]
+        setCountryList(names)
+        setCountry({ name: picked.name.common, flagUrl: picked.flags.png })
+        startTime.current = Date.now()
+      } catch {
+        setFetchError(true)
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [])
 
   // filter countries as user types
   const handleInputChange = (e) => {
@@ -186,7 +191,7 @@ export default function Game() {
     setInput(val)
     setShowAll(false)
     if (val.length > 0) {
-      const filtered = countries.filter(c =>
+      const filtered = countryList.filter(c =>
         c.toLowerCase().startsWith(val.toLowerCase())
       )
       setSuggestions(filtered.slice(0, 5))
@@ -220,8 +225,8 @@ export default function Game() {
 
   const handleGuess = () => {
     if (!input.trim() || won || lost) return
-    if (!countries.includes(input.trim())) return
-    const correct = input.trim().toLowerCase() === answer.toLowerCase()
+    if (!countryList.includes(input.trim())) return
+    const correct = input.trim().toLowerCase() === country.name.toLowerCase()
     const newGuesses = [...guesses, { text: input, correct }]
     setGuesses(newGuesses)
     setInput("")
@@ -235,12 +240,34 @@ export default function Game() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
+        <p className="text-gray-400 text-sm">Loading...</p>
+      </div>
+    )
+  }
+
+  if (fetchError) {
+    return (
+      <div className="min-h-screen bg-zinc-900 flex flex-col items-center justify-center gap-4">
+        <p className="text-red-400 text-sm">Could not load game data.</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-zinc-700 text-gray-200 rounded-lg hover:bg-zinc-600 text-sm"
+        >
+          Try again
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-zinc-900 flex flex-col items-center justify-center gap-8 px-4">
       <h1 className="text-3xl font-bold text-white">Guess the Flag</h1>
 
       <div style={{ overflow: "hidden", width: FLAG_W, height: FLAG_H, borderRadius: 12 }}>
-        <ScatterFlag src={testFlag} revealAmount={revealAmount} />
+        <ScatterFlag src={country.flagUrl} revealAmount={revealAmount} />
       </div>
 
       <p className="text-gray-400 text-sm">{guesses.length} / {MAX_GUESSES} guesses</p>
@@ -299,16 +326,16 @@ export default function Game() {
               {/* Full country list */}
               {showAll && (
                 <div className="absolute top-full left-0 right-0 bg-zinc-800 border border-zinc-600 rounded-lg mt-1 z-10 overflow-y-auto max-h-48">
-                  {countries.map((country) => (
+                  {countryList.map((c) => (
                     <div
-                      key={country}
+                      key={c}
                       onClick={() => {
-                        handleSelect(country)
+                        handleSelect(c)
                         setShowAll(false)
                       }}
                       className="px-4 py-2 text-gray-200 hover:bg-zinc-700 cursor-pointer text-sm"
                     >
-                      {country}
+                      {c}
                     </div>
                   ))}
                 </div>
@@ -333,7 +360,7 @@ export default function Game() {
       {lost && (
         <div className="text-center">
           <p className="text-red-400 text-2xl font-bold">Out of guesses!</p>
-          <p className="text-gray-400 mt-1">The answer was <span className="text-white font-semibold">{answer}</span></p>
+          <p className="text-gray-400 mt-1">The answer was <span className="text-white font-semibold">{country.name}</span></p>
         </div>
       )}
     </div>
