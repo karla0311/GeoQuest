@@ -1,5 +1,14 @@
 import * as gameService from "../services/gameService.js"
 
+export const getLastResult = async (req, res) => {
+  try {
+    const result = await gameService.getLastResult(req.user.id)
+    res.json(result)
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch last result" })
+  }
+}
+
 export const submitResult = async (req, res) => {
   const { score, stage, time_taken, accuracy } = req.body
 
