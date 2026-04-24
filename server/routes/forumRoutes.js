@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getPosts, createPost } from "../controllers/forumController.js"
+import { getPosts, createPost, addComment, votePost, editPost, removePost } from "../controllers/forumController.js"
 import { requireAuth } from "../middleware/authMiddleware.js"
 
 const router = Router();
@@ -7,9 +7,10 @@ const router = Router();
 router.get("/", getPosts)
 router.post("/", requireAuth, createPost)
 
-// GET    /forum/posts
-// POST   /forum/posts
-// POST   /forum/reply
-// DELETE /forum/posts/:id
+router.post("/comment", requireAuth, addComment)
+router.post("/vote", requireAuth, votePost)
+
+router.put("/:id", requireAuth, editPost)
+router.delete("/:id", requireAuth, removePost)
 
 export default router;
