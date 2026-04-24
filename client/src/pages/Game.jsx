@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react"
+import { submitGameResult } from "../api/gameService"
 
 // number of tile columns and rows (more = smaller tiles)
 const COLS = 55
@@ -144,6 +145,8 @@ export default function Game() {
   const [suggestions, setSuggestions] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [showAll, setShowAll] = useState(false)
+  const startTime = useRef(Date.now())
+  const submitted = useRef(false)
 
   const countries = [
     "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia",
@@ -205,6 +208,16 @@ export default function Game() {
   // (0 = scattered, 1 = fully assembled)
   const revealAmount = won ? 1 : Math.min(1, guesses.length / MAX_GUESSES)
 
+  // sends result once per game so a refresh after winning doesn't double-insert
+  const sendResult = (didWin, guessCount) => {
+    if (submitted.current) return
+    submitted.current = true
+    const time_taken = Math.round((Date.now() - startTime.current) / 1000)
+    const score = didWin ? Math.max(0, (MAX_GUESSES - guessCount + 1) * 100) : 0
+    submitGameResult({ score, stage: 1, time_taken, accuracy: didWin ? 100 : 0 })
+      .catch(err => console.error("failed to save game result", err))
+  }
+
   const handleGuess = () => {
     if (!input.trim() || won || lost) return
     if (!countries.includes(input.trim())) return
@@ -213,8 +226,13 @@ export default function Game() {
     setGuesses(newGuesses)
     setInput("")
     setSuggestions([])
-    if (correct) setWon(true)
-    else if (newGuesses.length >= MAX_GUESSES) setLost(true)
+    if (correct) {
+      setWon(true)
+      sendResult(true, newGuesses.length)
+    } else if (newGuesses.length >= MAX_GUESSES) {
+      setLost(true)
+      sendResult(false, newGuesses.length)
+    }
   }
 
   return (
