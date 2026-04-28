@@ -99,7 +99,7 @@ export default function Results() {
     )
   }
 
-  if (!result) {
+  if (!result || (Array.isArray(result) && result.length === 0)) {
     return (
       <div className="min-h-screen bg-zinc-900 flex flex-col items-center justify-center gap-4 px-4 text-center">
         <h2 className="text-2xl font-bold text-white">No games yet</h2>
@@ -114,13 +114,16 @@ export default function Results() {
     )
   }
 
-  // map the single row we have to its stage slot. when stages 2 and 3 are
-  // built this can grow into fetching the whole session's rows
+  // map the results array to its stage slots (flag = 1, globe = 2)
+  const resultsArray = Array.isArray(result) ? result : [result];
+  
   const stages = {
-    1: result.stage === 1 ? result : null,
-    2: result.stage === 2 ? result : null,
-    3: result.stage === 3 ? result : null,
+    1: resultsArray.find(r => Number(r.stage) === 1) || null,
+    2: resultsArray.find(r => Number(r.stage) === 2) || null,
+    3: resultsArray.find(r => Number(r.stage) === 3) || null,
   }
+
+  // sum up stage scores for total
   const totalScore = Object.values(stages).filter(Boolean).reduce((sum, s) => sum + s.score, 0)
 
   return (

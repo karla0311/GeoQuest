@@ -225,24 +225,39 @@ export default function Game() {
       .catch(err => console.error("failed to save game result", err))
   }
 
-  const handleGuess = () => {
-    if (!input.trim() || won || lost) return
-    if (!countryList.includes(input.trim())) return
-    const correct = input.trim().toLowerCase() === country.name.toLowerCase()
-    const newGuesses = [...guesses, { text: input, correct }]
-    setGuesses(newGuesses)
-    setInput("")
-    setSuggestions([])
-    if (correct) {
-      setWon(true)
-      sendResult(true, newGuesses.length)
-      setTimeout(() => navigate("/results"), 1500)
-    } else if (newGuesses.length >= MAX_GUESSES) {
-      setLost(true)
-      sendResult(false, newGuesses.length)
-      setTimeout(() => navigate("/results"), 1500)
-    }
+const handleGuess = () => {
+  if (!input.trim() || won || lost) return
+  if (!countryList.includes(input.trim())) return
+  const correct = input.trim().toLowerCase() === country.name.toLowerCase()
+  const newGuesses = [...guesses, { text: input, correct }]
+  setGuesses(newGuesses)
+  setInput("")
+  setSuggestions([])
+
+  if (correct) {
+    setWon(true)
+    sendResult(true, newGuesses.length)
+    setTimeout(() => {
+      navigate("/stage2", { 
+        state: { 
+          country: country.name, 
+          flagUrl: country.flagUrl 
+        } 
+      })
+    }, 1500)
+  } else if (newGuesses.length >= MAX_GUESSES) {
+    setLost(true)
+    sendResult(false, newGuesses.length)
+    setTimeout(() => {
+      navigate("/stage2", { 
+        state: { 
+          country: country.name, 
+          flagUrl: country.flagUrl 
+        } 
+      })
+    }, 1500)
   }
+}
 
   if (loading) {
     return (
