@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import Leaderboard from "./pages/Leaderboard";
 import Forum from "./pages/Forum";
 import Results from "./pages/Results";
+import Stage2Globe from "./pages/Stage2Globe";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -25,6 +26,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/game" element={<ProtectedRoute><Game /></ProtectedRoute>} />
+        <Route path="/stage2" element={<ProtectedRoute><Stage2Globe /></ProtectedRoute>} />
         <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
         <Route path="/forum" element={<ProtectedRoute><Forum /></ProtectedRoute>} />
         <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
