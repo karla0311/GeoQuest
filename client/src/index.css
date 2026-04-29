@@ -1,1 +1,33 @@
 @import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes starDrift {
+  from { transform: translateY(0); }
+  to { transform: translateY(100vh); }
+}
+
+.stars-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: transparent;
+  animation: starDrift linear infinite;
+  image-rendering: pixelated; 
+}
+
+.stars-small {
+  opacity: 0.6;
+}
+
+.stars-medium {
+  opacity: 0.8;
+  animation: starDrift linear infinite;
+}
+
+.stars-large {
+  opacity: 1;
+  animation: starDrift linear infinite;
+}

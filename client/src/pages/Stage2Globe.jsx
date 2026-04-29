@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import Globe from "react-globe.gl"
 import { submitGameResult } from "../api/gameService"
+import StarFieldBackground from "../components/Backgrounds/StarFieldBackground"
 
 const MAX_GUESSES = 6
 
@@ -53,20 +54,36 @@ export default function Stage2Globe() {
 
   // store answer feature in a ref so click handler always has current value
   useEffect(() => {
-    if (!countries.features.length || !state?.country) return
-    const match = countries.features.find(f =>
-      f.properties.NAME?.toLowerCase() === state.country.toLowerCase() ||
-      f.properties.NAME_LONG?.toLowerCase() === state.country.toLowerCase()
-    )
-    answerFeatureRef.current = match ?? null
-  }, [countries, state])
+    if (!countries.features.length || !state?.code) return
+
+  const match = countries.features.find(f => {
+    return f.properties.ISO_A2?.toUpperCase() === state.code.toUpperCase()
+  })
+  answerFeatureRef.current = match ?? null
+}, [countries, state])
 
   // point globe at answer country on load
-  useEffect(() => {
-    if (!globeRef.current || !answerFeatureRef.current) return
-    const { lat, lon } = getCentroid(answerFeatureRef.current)
-    globeRef.current.pointOfView({ lat, lng: lon, altitude: 2 }, 1000)
-  }, [countries])
+useEffect(() => {
+  if (!countries.features.length || !state?.country) return;
+
+  const targetName = state.country.toLowerCase();
+  const targetCode = state.code?.toLowerCase();
+
+  const match = countries.features.find(f => {
+    const props = f.properties;
+    return (
+      props.ISO_A2?.toLowerCase() === targetCode ||
+      props.NAME?.toLowerCase() === targetName ||
+      props.NAME_LONG?.toLowerCase() === targetName
+    );
+  });
+
+  answerFeatureRef.current = match ?? null;
+
+  if (!match) {
+    console.error("Match failed for:", state.country, state.code);
+  }
+}, [countries, state]);
 
   useEffect(() => {
     if (globeRef.current) {
@@ -76,35 +93,45 @@ export default function Stage2Globe() {
   }, [countries])
 
   const handleCountryClick = (polygon) => {
-    if (!polygon) return
-    if (done) return
-    if (!answerFeatureRef.current) return
-    if (guesses.some(g => g.feature.properties.NAME === polygon.properties.NAME)) return
+    if (!polygon || done || !answerFeatureRef.current) return;
 
-    const isCorrect =
-      polygon.properties.NAME?.toLowerCase() === state.country.toLowerCase() ||
-      polygon.properties.NAME_LONG?.toLowerCase() === state.country.toLowerCase()
+    const polyProps = polygon.properties;
+    const targetName = state.country.toLowerCase();
+    const targetCode = state.code?.toLowerCase();
+
+    // prevent duplicate guesses of the same country
+    if (guesses.some(g => g.feature.properties.NAME === polyProps.NAME)) return;
+
+    const isCorrect = 
+      polyProps.ISO_A2?.toLowerCase() === targetCode ||
+      polyProps.NAME?.toLowerCase() === targetName ||
+      polyProps.NAME_LONG?.toLowerCase() === targetName;
 
     if (isCorrect) {
-      setGuesses(prev => [...prev, { feature: polygon, correct: true }])
-      setWon(true)
-      setDone(true)
-      saveResult(true, guesses.length + 1)
-      setTimeout(() => navigate("/results"), 2000)
-      return
+      const finalGuesses = [...guesses, { feature: polygon, correct: true }];
+      setGuesses(finalGuesses);
+      setWon(true);
+      setDone(true);
+      saveResult(true, finalGuesses.length);
+      setTimeout(() => navigate("/results"), 2000);
+      return;
     }
 
-    const guessCentroid = getCentroid(polygon)
-    const answerCentroid = getCentroid(answerFeatureRef.current)
-    const bearing = getBearing(guessCentroid.lat, guessCentroid.lon, answerCentroid.lat, answerCentroid.lon)
-    const newGuesses = [...guesses, { feature: polygon, bearing, correct: false }]
-    setGuesses(newGuesses)
+    // handle Wrong Guess
+    const guessCentroid = getCentroid(polygon);
+    const answerCentroid = getCentroid(answerFeatureRef.current);
+    const bearing = getBearing(guessCentroid.lat, guessCentroid.lon, answerCentroid.lat, answerCentroid.lon);
+    
+    // create the updated array explicitly
+    const updatedGuesses = [...guesses, { feature: polygon, bearing, correct: false }];
+    setGuesses(updatedGuesses);
 
-    if (newGuesses.length >= MAX_GUESSES) {
-      setDone(true)
-      setWon(false)
-      saveResult(false, newGuesses.length)
-      setTimeout(() => navigate("/results"), 2500)
+    // check for Game Over using the updated array
+    if (updatedGuesses.length >= MAX_GUESSES) {
+      setDone(true);
+      setWon(false);
+      saveResult(false, updatedGuesses.length);
+      setTimeout(() => navigate("/results"), 2500);
     }
   }
 
@@ -137,9 +164,11 @@ export default function Stage2Globe() {
   if (!state?.country) return null
 
   return (
-    <div className="min-h-screen bg-zinc-900 flex flex-col items-center justify-center gap-5 px-4">
+    <div className="min-h-screen bg-transparent flex flex-col items-center justify-center gap-5 px-4">
 
-      {/* Header — always visible */}
+      <StarFieldBackground />
+
+      {/* Header */}
       <div className="flex flex-col items-center gap-2">
         <img src={state.flagUrl} alt="flag" className="h-12 rounded shadow" />
         <h1 className="text-2xl font-bold text-white">{state.country}</h1>
@@ -172,14 +201,23 @@ export default function Stage2Globe() {
 
       {/* Latest hint arrow */}
       {lastGuess && !done && (
-        <div className="flex flex-col items-center gap-1">
+        <div className="flex flex-col items-center gap-">
           <p className="text-gray-400 text-sm">
             <span className="text-white font-medium">{lastGuess.feature.properties.NAME}</span>
           </p>
-          <div style={{ transform: `rotate(${lastGuess.bearing}deg)`, display: "inline-block", lineHeight: 1 }}>
-            <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="36" cy="36" r="36" fill="#52525b"/>
-              <path d="M36 12 L54 38 H43 V60 H29 V38 H18 Z" fill="white"/>
+
+          <div 
+            style={{ 
+              transform: `rotate(${lastGuess.bearing}deg)`, 
+              display: "inline-block", 
+              lineHeight: 1 
+            }}
+            className="rounded-full bg-white/[0.03] backdrop-blur-[4px] border border-white/10 p-0 overflow-hidden"
+          >
+            <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" className="block">
+
+              <circle cx="36" cy="36" r="36" fill="transparent" />
+              <path d="M36 12 L54 38 H43 V60 H29 V38 H18 Z" fill="rgba(255, 255, 255, 0.8)"/>
             </svg>
           </div>
         </div>
@@ -192,7 +230,9 @@ export default function Stage2Globe() {
             <div
               key={i}
               className={`px-4 py-2 rounded-lg text-sm font-medium flex justify-between items-center ${
-                g.correct ? "bg-emerald-700 text-white" : "bg-zinc-700 text-gray-300"
+              g.correct 
+            ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]" 
+            : "bg-white/[0.01] backdrop-blur-[4px] border border-white/10 text-gray-300"
               }`}
             >
               <span>{g.feature.properties.NAME}</span>
