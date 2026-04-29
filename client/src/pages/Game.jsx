@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { submitGameResult } from "../api/gameService"
+import countryData from "../../countries.json"
+import StarFieldBackground from "../components/Backgrounds/StarFieldBackground"
 
 // number of tile columns and rows (more = smaller tiles)
-const COLS = 55
-const ROWS = 33
+const COLS = 20
+const ROWS = 12
 const FLAG_W = 400
 const FLAG_H = 250
 const TILE_W = FLAG_W / COLS
@@ -155,37 +157,36 @@ export default function Game() {
   const submitted = useRef(false)
   const navigate = useNavigate()
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        let data = countryCache
-        if (!data) {
-          const res = await fetch(
-            "https://restcountries.com/v3.1/all?fields=name,flags,cca2"
-          )
-          if (!res.ok) throw new Error("fetch failed")
-          data = await res.json()
-          // drop entries missing a flag or common name (Antarctic territories etc.)
-          data = data.filter(c => c.flags?.png && c.name?.common)
-          countryCache = data
-        }
+useEffect(() => {
+  const load = () => {
+    try {
+      // extract names for the dropdown/search
+      const names = countryData
+        .map(c => c.name)
+        .sort((a, b) => a.localeCompare(b));
 
-        const names = data
-          .map(c => c.name.common)
-          .sort((a, b) => a.localeCompare(b))
+      // pick a random country from your local list
+      const picked = countryData[Math.floor(Math.random() * countryData.length)];
 
-        const picked = data[Math.floor(Math.random() * data.length)]
-        setCountryList(names)
-        setCountry({ name: picked.name.common, flagUrl: picked.flags.png })
-        startTime.current = Date.now()
-      } catch {
-        setFetchError(true)
-      } finally {
-        setLoading(false)
-      }
+      setCountryList(names);
+      
+      // use FlagCDN with the JSON code
+      setCountry({ 
+        name: picked.name, 
+        flagUrl: `https://flagcdn.com/w640/${picked.code.toLowerCase()}.png` 
+      });
+
+      startTime.current = Date.now();
+    } catch (err) {
+      console.error("Error loading local country data:", err);
+      setFetchError(true);
+    } finally {
+      setLoading(false);
     }
-    load()
-  }, [])
+  };
+
+  load();
+}, []);
 
   // filter countries as user types
   const handleInputChange = (e) => {
@@ -241,7 +242,8 @@ const handleGuess = () => {
       navigate("/stage2", { 
         state: { 
           country: country.name, 
-          flagUrl: country.flagUrl 
+          flagUrl: country.flagUrl, 
+          code: country.code
         } 
       })
     }, 1500)
@@ -282,8 +284,12 @@ const handleGuess = () => {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-900 flex flex-col items-center justify-center gap-8 px-4">
-      <h1 className="text-3xl font-bold text-white">Guess the Flag</h1>
+    <div className="min-h-screen bg-transparent flex flex-col items-center justify-center gap-7 px-4">
+      
+      <StarFieldBackground />
+      
+      
+      <h1 className="text-3xl font-bold text-white drop-shadow-lg">Guess the Flag</h1>
 
       <div style={{ overflow: "hidden", width: FLAG_W, height: FLAG_H, borderRadius: 12 }}>
         <ScatterFlag src={country.flagUrl} revealAmount={revealAmount} />
@@ -295,8 +301,10 @@ const handleGuess = () => {
         {guesses.map((g, i) => (
           <div
             key={i}
-            className={`px-4 py-2 rounded-lg text-sm font-medium ${
-              g.correct ? "bg-emerald-700 text-white" : "bg-zinc-700 text-gray-300"
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 border ${
+              g.correct 
+                ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)]" 
+                : "bg-white/[0.01] backdrop-blur-[4px] border-white/10 text-gray-300"
             }`}
           >
             {g.text}
@@ -313,7 +321,7 @@ const handleGuess = () => {
                 onChange={handleInputChange}
                 onKeyDown={(e) => e.key === "Enter" && handleGuess()}
                 placeholder="Type a country..."
-                className="w-full px-4 py-3 bg-zinc-800 border border-zinc-600 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-700"
+                className="w-full px-4 py-3 bg-white/[0.01] backdrop-blur-[4px] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
               />
               {/* Dropdown arrow button */}
               <button
@@ -329,12 +337,12 @@ const handleGuess = () => {
 
               {/* Autocomplete suggestions */}
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 bg-zinc-800 border border-zinc-600 rounded-lg mt-1 z-10 overflow-hidden">
+                <div className="absolute top-full left-0 right-0 bg-white/[0.01] backdrop-blur-[4px] border border-white/10 rounded-lg mt-2 z-20 overflow-y-auto max-h-60 shadow-2xl">
                   {suggestions.map((country) => (
                     <div
                       key={country}
                       onClick={() => handleSelect(country)}
-                      className="px-4 py-2 text-gray-200 hover:bg-zinc-700 cursor-pointer text-sm"
+                      className="px-4 py-3 text-white hover:bg-white/10 cursor-pointer text-sm transition-colors border-b border-white/5 last:border-none"
                     >
                       {country}
                     </div>
@@ -344,7 +352,7 @@ const handleGuess = () => {
 
               {/* Full country list */}
               {showAll && (
-                <div className="absolute top-full left-0 right-0 bg-zinc-800 border border-zinc-600 rounded-lg mt-1 z-10 overflow-y-auto max-h-48">
+                <div className="absolute top-full left-0 right-0 bg-white/[0.01] backdrop-blur-[4px] border border-white/10 rounded-lg mt-2 z-20 overflow-y-auto max-h-60 shadow-2xl">
                   {countryList.map((c) => (
                     <div
                       key={c}
@@ -352,7 +360,7 @@ const handleGuess = () => {
                         handleSelect(c)
                         setShowAll(false)
                       }}
-                      className="px-4 py-2 text-gray-200 hover:bg-zinc-700 cursor-pointer text-sm"
+                      className="px-4 py-3 text-white hover:bg-white/20 cursor-pointer text-sm transition-colors border-b border-white/5 last:border-none"
                     >
                       {c}
                     </div>
@@ -362,7 +370,7 @@ const handleGuess = () => {
             </div>
             <button
               onClick={handleGuess}
-              className="px-6 py-3 bg-emerald-700 text-white rounded-lg hover:bg-emerald-600"
+              className="px-8 py-3 bg-emerald-500/[0.03] backdrop-blur-[4px] border border-emerald-500/40 text-emerald-400 font-bold uppercase tracking-wider rounded-lg transition-all hover:bg-emerald-500/20 hover:border-emerald-500/60 hover:shadow-[0_0_20px_rgba(16,185,129,0.20)] active:scale-95"
             >
               Guess
             </button>

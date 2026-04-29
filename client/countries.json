@@ -1,0 +1,18 @@
+[
+  { "name": "Afghanistan", "code": "AF" },
+  { "name": "Albania", "code": "AL" },
+  { "name": "Algeria", "code": "DZ" },
+  { "name": "Argentina", "code": "AR" },
+  { "name": "Armenia", "code": "AM" },
+  { "name": "Australia", "code": "AU" },
+  { "name": "Austria", "code": "AT" },
+  { "name": "Brazil", "code": "BR" },
+  { "name": "Canada", "code": "CA" },
+  { "name": "China", "code": "CN" },
+  { "name": "France", "code": "FR" },
+  { "name": "Germany", "code": "DE" },
+  { "name": "India", "code": "IN" },
+  { "name": "Japan", "code": "JP" },
+  { "name": "Mexico", "code": "MX" },
+  { "name": "United States of America", "code": "US" }
+]
