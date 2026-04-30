@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
+import StarFieldBackground from "../components/Backgrounds/StarFieldBackground"
 import API from "../api/api"
 
 function Dashboard() {
@@ -18,75 +19,86 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-900">
+    <div className="min-h-screen bg-transparent">
+      <StarFieldBackground />
 
       {/* Navbar */}
-      <nav className="bg-zinc-800 px-8 py-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-emerald-700">GeoQuest</h1>
+      <nav className="relative z-10 bg-black/30 backdrop-blur-md px-8 py-4 flex justify-between items-center border-b border-white/10">
+        <h1 className="text-3xl font-bold text-white font-fraunces">🌍 GeoQuest</h1>
         <div className="flex items-center gap-4">
-          <span className="text-gray-300">Welcome, {user?.email ?? "Player"}</span>
+          <span className="text-gray-300 text-sm">Welcome, <span className="text-[#9ab79a] font-semibold">{user?.email?.split('@')[0] ?? "Player"}</span></span>
           <button
             onClick={() => navigate("/forum")}
-            className="bg-zinc-700 text-white px-4 py-2 rounded-lg hover:bg-zinc-600"
+            className="px-4 py-2 bg-[#4a6b4f] text-white rounded-lg text-sm font-semibold hover:bg-[#5f8463] transition-all duration-200"
           >
-            Go to Forum
+            📌 Forum
           </button>
           <button
             onClick={handleLogout}
-            className="px-4 py-2 border border-zinc-600 rounded-lg text-gray-300 hover:bg-zinc-700"
+            className="px-4 py-2 border border-[#4a6b4f]/50 text-gray-300 rounded-lg text-sm hover:bg-[#4a6b4f]/20 transition-all duration-200"
           >
             Logout
           </button>
         </div>
       </nav>
 
-      <div className="max-w-5xl mx-auto px-8 py-10">
+      <div className="relative z-10 max-w-6xl mx-auto px-8 py-12">
 
-        {/* Quick Start */}
-        <div className="bg-emerald-700 text-white rounded-xl p-8 mb-8 flex justify-between items-center">
+        {/* Quick Start Hero */}
+        <div className="bg-gradient-to-r from-[#4a6b4f] to-[#3a5540] text-white rounded-2xl p-10 mb-12 flex justify-between items-center shadow-xl border border-[#5a7b5f]/30 hover:shadow-[0_0_30px_rgba(74,107,79,0.3)] transition-all duration-300">
           <div>
-            <h2 className="text-2xl font-bold mb-1">Ready to play?</h2>
-            <p className="text-emerald-100">Start a new game and test your geography knowledge.</p>
+            <h2 className="text-3xl font-bold mb-2 font-fraunces">🚀 Ready for a Challenge?</h2>
+            <p className="text-[#9ab79a]">Test your geography skills and climb the leaderboard.</p>
           </div>
           <button
             onClick={() => navigate("/game")}
-            className="bg-white text-emerald-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100"
+            className="px-8 py-4 bg-white text-[#4a6b4f] rounded-xl font-bold text-lg hover:bg-gray-100 transform hover:scale-105 transition-all duration-200 shadow-lg"
           >
-            Start New Game
+            Start Game
           </button>
         </div>
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-3 gap-6 mb-8">
-          <div className="bg-zinc-800 rounded-xl p-6 text-center">
-            <p className="text-3xl font-bold text-white">{stats ? stats.games_played : "--"}</p>
-            <p className="text-gray-400 mt-1">Games Played</p>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="group bg-black/25 backdrop-blur-md rounded-2xl p-8 text-center border border-white/10 hover:border-[#4a6b4f]/50 hover:bg-[#4a6b4f]/10 transition-all duration-300 cursor-default">
+            <div className="text-5xl font-bold text-white mb-2 group-hover:scale-110 transition-transform duration-300">{stats ? stats.games_played : "--"}</div>
+            <p className="text-gray-300 text-lg font-semibold">Games Played</p>
+            <p className="text-gray-500 text-sm mt-2">Keep playing to improve</p>
           </div>
-          <div className="bg-zinc-800 rounded-xl p-6 text-center">
-            <p className="text-3xl font-bold text-white">{stats ? stats.avg_score : "--"}</p>
-            <p className="text-gray-400 mt-1">Average Score</p>
+          <div className="group bg-black/25 backdrop-blur-md rounded-2xl p-8 text-center border border-white/10 hover:border-[#4a6b4f]/50 hover:bg-[#4a6b4f]/10 transition-all duration-300 cursor-default">
+            <div className="text-5xl font-bold text-[#9ab79a] mb-2 group-hover:scale-110 transition-transform duration-300">{stats ? stats.avg_score : "--"}</div>
+            <p className="text-gray-300 text-lg font-semibold">Average Score</p>
+            <p className="text-gray-500 text-sm mt-2">What's the highest you can go?</p>
           </div>
-          <div className="bg-zinc-800 rounded-xl p-6 text-center">
-            <p className="text-3xl font-bold text-white">{stats ? `${stats.avg_accuracy}%` : "--"}</p>
-            <p className="text-gray-400 mt-1">Accuracy</p>
+          <div className="group bg-black/25 backdrop-blur-md rounded-2xl p-8 text-center border border-white/10 hover:border-[#4a6b4f]/50 hover:bg-[#4a6b4f]/10 transition-all duration-300 cursor-default">
+            <div className="text-5xl font-bold text-[#7ab789] mb-2 group-hover:scale-110 transition-transform duration-300">{stats ? `${stats.avg_accuracy}%` : "--"}</div>
+            <p className="text-gray-300 text-lg font-semibold">Accuracy</p>
+            <p className="text-gray-500 text-sm mt-2">Stay sharp and focused</p>
           </div>
         </div>
 
-        {/* Bottom Row */}
+        {/* Quick Links */}
         <div className="grid grid-cols-2 gap-6">
-
-          {/* Recent Activity */}
-          <div className="bg-zinc-800 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Recent Activity</h3>
-            <p className="text-gray-400 text-sm">No recent games yet.</p>
+          <div className="bg-black/25 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-[#4a6b4f]/50 hover:shadow-[0_0_20px_rgba(74,107,79,0.2)] transition-all duration-300">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="text-2xl font-bold text-white font-fraunces mb-1">📊 Recent Activity</h3>
+                <p className="text-gray-400 text-sm">Your latest game sessions</p>
+              </div>
+              <span className="text-3xl">🎮</span>
+            </div>
+            <p className="text-gray-400 text-sm">No recent games yet. <button onClick={() => navigate("/game")} className="text-[#9ab79a] hover:underline font-semibold">Start now!</button></p>
           </div>
-
-          {/* Leaderboard Preview */}
-          <div className="bg-zinc-800 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Leaderboard</h3>
-            <p className="text-gray-400 text-sm">No scores yet.</p>
+          <div className="bg-black/25 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-[#4a6b4f]/50 hover:shadow-[0_0_20px_rgba(74,107,79,0.2)] transition-all duration-300">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="text-2xl font-bold text-white font-fraunces mb-1">🏆 Leaderboard</h3>
+                <p className="text-gray-400 text-sm">Compete with players worldwide</p>
+              </div>
+              <span className="text-3xl">🥇</span>
+            </div>
+            <button onClick={() => navigate("/leaderboard")} className="text-[#9ab79a] hover:text-white font-semibold text-sm transition-colors">View Rankings →</button>
           </div>
-
         </div>
 
       </div>
