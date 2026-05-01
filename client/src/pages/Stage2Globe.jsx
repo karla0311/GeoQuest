@@ -113,7 +113,17 @@ useEffect(() => {
       setWon(true);
       setDone(true);
       saveResult(true, finalGuesses.length);
-      setTimeout(() => navigate("/results"), 2000);
+      setTimeout(() => {
+        navigate("/stage3", { 
+          state: { 
+          name: state.country || state.name, 
+          capital: state.capital,
+          flagUrl: state.flagUrl,
+          code: state.code,
+            score: (state.score || 0) + 100
+          } 
+        });
+      }, 2000);
       return;
     }
 
