@@ -50,7 +50,7 @@ function ComposeModal({ open, onClose, onSubmit, loading }) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="What's your question or insight?"
-              className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-lg text-gray-200 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a6b4f]/50 text-sm transition-colors"
+              className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-lg text-gray-200 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm transition-colors"
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -60,7 +60,7 @@ function ComposeModal({ open, onClose, onSubmit, loading }) {
               onChange={(e) => setBody(e.target.value)}
               placeholder="Share your thoughts, tips, or questions..."
               rows={5}
-              className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-lg text-gray-200 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#4a6b4f]/50 text-sm resize-none transition-colors"
+              className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-lg text-gray-200 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm resize-none transition-colors"
             />
           </div>
           <div className="flex justify-end gap-3 mt-2">
@@ -74,7 +74,7 @@ function ComposeModal({ open, onClose, onSubmit, loading }) {
             <button
               type="submit"
               disabled={loading || !title.trim() || !body.trim()}
-              className="px-5 py-2.5 text-sm font-semibold bg-[#4a6b4f] text-white rounded-lg hover:bg-[#5f8463] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="px-5 py-2.5 text-sm font-semibold bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {loading ? "Posting..." : "Post"}
             </button>
@@ -115,7 +115,7 @@ function EditModal({ open, post, onClose, onSubmit }) {
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#4a6b4f]/50 text-sm transition-colors"
+              className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm transition-colors"
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -124,14 +124,14 @@ function EditModal({ open, post, onClose, onSubmit }) {
               value={body}
               onChange={(e) => setBody(e.target.value)}
               rows={5}
-              className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#4a6b4f]/50 text-sm resize-none transition-colors"
+              className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm resize-none transition-colors"
             />
           </div>
           <div className="flex justify-end gap-3 mt-2">
             <button type="button" onClick={onClose} className="px-4 py-2.5 text-sm font-medium text-gray-400 border border-white/20 rounded-lg hover:text-white hover:bg-white/10 transition-all">
               Cancel
             </button>
-            <button type="submit" disabled={!title.trim() || !body.trim()} className="px-5 py-2.5 text-sm font-semibold bg-[#4a6b4f] text-white rounded-lg hover:bg-[#5f8463] disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+            <button type="submit" disabled={!title.trim() || !body.trim()} className="px-5 py-2.5 text-sm font-semibold bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
               Save
             </button>
           </div>
@@ -164,10 +164,10 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
   }
 
   return (
-    <div className="bg-black/25 backdrop-blur-md border border-white/10 rounded-xl p-5 hover:border-[#4a6b4f]/50 hover:bg-[#4a6b4f]/10 transition-all duration-300">
+    <div className="bg-black/25 backdrop-blur-md border border-white/10 rounded-xl p-5 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all duration-300">
       <div className="flex items-start gap-3">
         {/* Avatar */}
-        <div className="w-10 h-10 rounded-full bg-[#4a6b4f]/60 flex items-center justify-center text-[#9ab79a] text-sm font-bold flex-shrink-0 mt-0.5">
+        <div className="w-10 h-10 rounded-full bg-emerald-500/60 flex items-center justify-center text-emerald-400 text-sm font-bold flex-shrink-0 mt-0.5">
           {(post.profiles?.username ?? post.user_id ?? "?")[0].toUpperCase()}
         </div>
 
@@ -176,7 +176,7 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
           <div className="flex items-center gap-2 flex-wrap mb-1">
             <h3 className="text-base font-semibold text-white leading-snug">{post.title}</h3>
             {isNew && (
-              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-[#4a6b4f]/50 text-[#9ab79a] border border-[#4a6b4f]/40 flex-shrink-0\">
+              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-emerald-500/50 text-emerald-400 border border-emerald-500/40 flex-shrink-0\">
                 ✨ NEW
               </span>
             )}
@@ -199,7 +199,7 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
             <button
               onClick={() => onVote(post.id)}
               className={`flex items-center gap-1.5 transition-all ${
-                hasVoted ? "text-[#9ab79a] font-semibold" : "hover:text-[#9ab79a]"
+                hasVoted ? "text-emerald-400 font-semibold" : "hover:text-emerald-400"
               }`}
             >
               👍 <span>{voteCount}</span>
@@ -216,7 +216,7 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
             {/* ↩ Reply */}
             <button
               onClick={() => { setShowCommentBox(!showCommentBox); setShowComments(true) }}
-              className="hover:text-[#9ab79a] transition-colors"
+              className="hover:text-emerald-400 transition-colors"
             >
               ↩️ Reply
             </button>
@@ -244,12 +244,12 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
                 onChange={(e) => setComment(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleCommentSubmit()}
                 placeholder="Write a comment..."
-                className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#4a6b4f] transition-colors"
+                className="flex-1 px-3 py-2 bg-black/40 border border-white/10 rounded text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
               />
               <button
                 onClick={handleCommentSubmit}
                 disabled={!comment.trim()}
-                className="px-4 py-2 bg-[#4a6b4f] text-white text-sm font-semibold rounded hover:bg-[#5f8463] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 bg-emerald-500 text-white text-sm font-semibold rounded hover:bg-emerald-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Post
               </button>
@@ -265,7 +265,7 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
                 .map((c) => (
                   <div key={c.id} className="flex items-start gap-2\">
                     {/* Comment avatar */}
-                    <div className="w-6 h-6 rounded-full bg-[#4a6b4f]/40 flex items-center justify-center text-gray-400 text-[10px] font-semibold flex-shrink-0 mt-0.5\">
+                    <div className="w-6 h-6 rounded-full bg-emerald-500/40 flex items-center justify-center text-gray-400 text-[10px] font-semibold flex-shrink-0 mt-0.5\">
                       ?
                     </div>
                     <div className="flex-1 bg-black/20 border border-white/5 rounded-lg px-3 py-2\">
@@ -393,9 +393,9 @@ export default function Forum() {
       <nav className="relative z-10 bg-black/30 backdrop-blur-md px-8 py-4 flex justify-between items-center border-b border-white/10">
         <h1 className="text-3xl font-bold text-white font-fraunces">🌍 GeoQuest</h1>
         <div className="flex items-center gap-4">
-          <span className="text-gray-300 text-sm">Welcome, <span className="text-[#9ab79a] font-semibold">{user?.email?.split('@')[0] ?? "Player"}</span></span>
-          <button onClick={() => navigate("/dashboard")} className="px-4 py-2 bg-[#4a6b4f] text-white rounded-lg text-sm font-semibold hover:bg-[#5f8463] transition-all duration-200">Dashboard</button>
-          <button onClick={handleLogout} className="px-4 py-2 border border-[#4a6b4f]/50 text-gray-300 rounded-lg text-sm hover:bg-[#4a6b4f]/20 transition-all duration-200">Logout</button>
+          <span className="text-gray-300 text-sm">Welcome, <span className="text-emerald-400 font-semibold">{user?.email?.split('@')[0] ?? "Player"}</span></span>
+          <button onClick={() => navigate("/dashboard")} className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-all duration-200">Dashboard</button>
+          <button onClick={handleLogout} className="px-4 py-2 border border-emerald-500/50 text-gray-300 rounded-lg text-sm hover:bg-emerald-500/20 transition-all duration-200">Logout</button>
         </div>
       </nav>
 
@@ -411,9 +411,9 @@ export default function Forum() {
             </div>
             <button
               onClick={() => setComposeOpen(true)}
-              className="bg-[#4a6b4f] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#5f8463] transition-all duration-200 transform hover:scale-105 text-sm flex-shrink-0"
+              className="bg-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-600 transition-all duration-200 transform hover:scale-105 text-sm flex-shrink-0"
             >
-              ✍️ New Post
+              New Post
             </button>
           </div>
 
@@ -425,8 +425,8 @@ export default function Forum() {
                 onClick={() => setActiveTab(tab)}
                 className={`px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
                   activeTab === tab 
-                    ? "bg-[#4a6b4f] text-white shadow-lg" 
-                    : "bg-black/20 text-gray-400 border border-white/10 hover:text-white hover:border-[#4a6b4f]/50"
+                    ? "bg-emerald-500 text-white shadow-lg" 
+                    : "bg-black/20 text-gray-400 border border-white/10 hover:text-white hover:border-emerald-500/50"
                 }`}
               >
                 {tab}
@@ -435,8 +435,8 @@ export default function Forum() {
           </div>
 
           {tagFilter && (
-            <div className="flex items-center gap-2 mb-4 text-sm text-gray-300 bg-[#4a6b4f]/20 border border-[#4a6b4f]/30 rounded-lg px-4 py-2 w-fit">
-              🏷️ <span className="text-[#9ab79a] font-medium">{tagFilter}</span>
+            <div className="flex items-center gap-2 mb-4 text-sm text-gray-300 bg-emerald-500/20 border border-emerald-500/30 rounded-lg px-4 py-2 w-fit">
+              🏷️ <span className="text-emerald-400 font-medium">{tagFilter}</span>
               <button onClick={() => setTagFilter(null)} className="ml-2 text-xs bg-white/10 hover:bg-white/20 px-2 py-0.5 rounded transition-colors">
                 ✕
               </button>
@@ -487,8 +487,8 @@ export default function Forum() {
                   onClick={() => setTagFilter(tagFilter === tag ? null : tag)}
                   className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 ${
                     tagFilter === tag
-                      ? "bg-[#4a6b4f] border-[#4a6b4f] text-white"
-                      : "bg-black/40 border border-white/10 text-gray-400 hover:border-[#4a6b4f]/50 hover:text-gray-200"
+                      ? "bg-emerald-500 border-emerald-500 text-white"
+                      : "bg-black/40 border border-white/10 text-gray-400 hover:border-emerald-500/50 hover:text-gray-200"
                   }`}
                 >
                   #{tag}
@@ -502,11 +502,11 @@ export default function Forum() {
             <div className="flex flex-col gap-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-400">Total posts</span>
-                <span className="text-sm font-semibold text-[#9ab79a]">{posts.length}</span>
+                <span className="text-sm font-semibold text-emerald-400">{posts.length}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-400">Total comments</span>
-                <span className="text-sm font-semibold text-[#9ab79a]">
+                <span className="text-sm font-semibold text-emerald-400">
                   {posts.reduce((sum, p) => sum + (p.forum_comments?.length ?? 0), 0)}
                 </span>
               </div>

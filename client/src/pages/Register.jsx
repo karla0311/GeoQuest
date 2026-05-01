@@ -38,11 +38,11 @@ function Register() {
           <div className="text-5xl mb-5">✉️</div>
           <h2 className="text-3xl font-bold text-white mb-4 font-fraunces">Check Your Email</h2>
           <p className="text-gray-300 mb-8">
-            We sent a confirmation link to <span className="text-[#9ab79a] font-semibold">{email}</span>. Click the link to verify your account, then log in.
+            We sent a confirmation link to <span className="text-emerald-400 font-semibold">{email}</span>. Click the link to verify your account, then log in.
           </p>
           <button
             onClick={() => navigate("/login")}
-            className="bg-[#4a6b4f] text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-[#5f8463] hover:shadow-[0_0_25px_rgba(154,183,154,0.35)] transform hover:scale-105 transition-all duration-300 w-full"
+            className="bg-emerald-500 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-emerald-600 hover:shadow-[0_0_25px_rgba(16,185,129,0.35)] transform hover:scale-105 transition-all duration-300 w-full"
           >
             Go to Login
           </button>
@@ -63,27 +63,27 @@ function Register() {
             type="email"
             placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
-            className="border border-[#4a6b4f]/50 rounded-lg px-4 py-3 text-gray-200 bg-[#0f1a12]/60 focus:outline-none focus:ring-2 focus:ring-[#4a6b4f] transition-all"
+            className="border border-emerald-500/50 rounded-lg px-4 py-3 text-gray-200 bg-[#0f1a12]/60 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
           />
           <input
             type="password"
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
-            className="border border-[#4a6b4f]/50 rounded-lg px-4 py-3 text-gray-200 bg-[#0f1a12]/60 focus:outline-none focus:ring-2 focus:ring-[#4a6b4f] transition-all"
+            className="border border-emerald-500/50 rounded-lg px-4 py-3 text-gray-200 bg-[#0f1a12]/60 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
           />
           <input
             type="password"
             placeholder="Confirm Password"
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="border border-[#4a6b4f]/50 rounded-lg px-4 py-3 text-gray-200 bg-[#0f1a12]/60 focus:outline-none focus:ring-2 focus:ring-[#4a6b4f] transition-all"
+            className="border border-emerald-500/50 rounded-lg px-4 py-3 text-gray-200 bg-[#0f1a12]/60 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
           />
           {error && <p className="text-red-400 text-sm text-center">{error}</p>}
           
           <button
             onClick={handleRegister}
-            className="bg-[#4a6b4f] text-white py-3 rounded-lg text-lg font-semibold hover:bg-[#5f8463] hover:shadow-[0_0_25px_rgba(154,183,154,0.35)] transform hover:scale-105 transition-all duration-300 mt-2"
+            className="bg-emerald-500 text-white py-3 rounded-lg text-lg font-semibold hover:bg-emerald-600 hover:shadow-[0_0_25px_rgba(16,185,129,0.35)] transform hover:scale-105 transition-all duration-300 mt-2"
           >
-            🚀 Create Account
+            Create Account
           </button>
         </div>
         
@@ -91,7 +91,7 @@ function Register() {
           Already have an account?{" "}
           <span
             onClick={() => navigate("/login")}
-            className="text-[#9ab79a] cursor-pointer hover:text-white transition-colors font-semibold"
+            className="text-emerald-400 cursor-pointer hover:text-white transition-colors font-semibold"
           >
             Login
           </span>
