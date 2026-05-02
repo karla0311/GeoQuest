@@ -11,14 +11,14 @@ export const saveResult = async (userId, { score, stage, time_taken, accuracy })
   return data
 }
 
-// fetches the 2 most recent game rows for a user, or null if they've never played
+// fetches the 3 most recent game rows for the session summary on Results
 export const getLastResult = async (userId) => {
   const { data, error } = await supabase
     .from("game_results")
     .select("*")
     .eq("user_id", userId)
     .order("played_at", { ascending: false })
-    .limit(2)
+    .limit(3)
 
   if (error) throw error
   return data

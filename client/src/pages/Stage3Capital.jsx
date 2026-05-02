@@ -1,22 +1,28 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import StarFieldBackground from "../components/Backgrounds/StarFieldBackground";
+import { submitGameResult } from "../api/gameService";
 
 const Stage3Capital = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  const [attempts, setAttempts] = useState([]); 
+  const [attempts, setAttempts] = useState([]);
   const [currentGuess, setCurrentGuess] = useState([]);
   const [isGameOver, setIsGameOver] = useState(false);
-  
+  const [didWin, setDidWin] = useState(false);
+
   // tracking letter statuses for the keyboard colors
-  const [letterStatuses, setLetterStatuses] = useState({}); 
+  const [letterStatuses, setLetterStatuses] = useState({});
+
+  const startTime = useRef(Date.now());
+  const submitted = useRef(false);
 
   // data extraction
   const countryData = state?.country?.country ? state.country : (state?.country || state || {});
   const countryName = countryData.country || countryData.name || "the country";
-  const rawCapital = (countryData.capital || "").toUpperCase().replace(/\s/g, '');
+  // strip anything that isn't a letter so capitals like "Washington D.C." map to a guessable WASHINGTONDC
+  const rawCapital = (countryData.capital || "").toUpperCase().replace(/[^A-Z]/g, '');
   const flagUrl = countryData.flagUrl;
 
   const MAX_ATTEMPTS = 6;
@@ -70,6 +76,23 @@ const Stage3Capital = () => {
     setCurrentGuess(prev => prev.slice(0, -1));
   }, []);
 
+  // save the stage row then head to results. give losses a longer pause so the answer reveal is readable
+  const saveAndNav = useCallback((didWin) => {
+    if (!submitted.current) {
+      submitted.current = true;
+      const time_taken = Math.round((Date.now() - startTime.current) / 1000);
+      const score = didWin ? 250 : 0;
+      submitGameResult({
+        score,
+        stage: 3,
+        time_taken,
+        accuracy: didWin ? 100 : 0,
+        country: countryName,
+      }).catch(err => console.error("failed to save stage 3 result", err));
+    }
+    setTimeout(() => navigate("/results"), didWin ? 2000 : 3500);
+  }, [navigate, countryName]);
+
   const submitGuess = useCallback(() => {
     if (currentGuess.length !== wordLength || isGameOver) return;
 
@@ -97,12 +120,14 @@ const Stage3Capital = () => {
     const guessString = currentGuess.join('');
     if (guessString === rawCapital) {
       setIsGameOver(true);
-      setTimeout(() => navigate("/results", { state: { won: true, score: (state?.score || 0) + 250 } }), 2000);
+      setDidWin(true);
+      saveAndNav(true);
     } else if (newAttempts.length >= MAX_ATTEMPTS) {
       setIsGameOver(true);
-      setTimeout(() => navigate("/results", { state: { won: false, answer: rawCapital } }), 2000);
+      setDidWin(false);
+      saveAndNav(false);
     }
-  }, [currentGuess, wordLength, isGameOver, attempts, getRowStatuses, letterStatuses, rawCapital, navigate, state?.score]);
+  }, [currentGuess, wordLength, isGameOver, attempts, getRowStatuses, letterStatuses, rawCapital, navigate, saveAndNav]);
 
   // handle physical keyboard input
   useEffect(() => {
@@ -174,6 +199,19 @@ const Stage3Capital = () => {
           );
         })}
       </div>
+
+      {/* End-of-game banner: cheer on a win, show the answer on a loss */}
+      {isGameOver && (
+        <div className="text-center mt-2">
+          {didWin ? (
+            <p className="text-emerald-400 text-xl font-bold uppercase tracking-widest">Correct!</p>
+          ) : (
+            <p className="text-gray-300 text-base mt-2">
+              Nice try with {attempts.length} attempts. The correct answer was <span className="text-white font-bold">{rawCapital}</span>
+            </p>
+          )}
+        </div>
+      )}
 
       {/* QWERTY Keyboard */}
       {!isGameOver && (
