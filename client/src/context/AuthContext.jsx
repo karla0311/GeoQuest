@@ -27,8 +27,13 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  const register = async (email, password) => {
-    const { data, error } = await supabase.auth.signUp({ email, password })
+  // username is stored in user_metadata so the handle_new_user trigger can copy it into profiles
+  const register = async (email, password, username) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { username } },
+    })
     return { data, error }
   }
 

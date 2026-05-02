@@ -266,11 +266,11 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
                   <div key={c.id} className="flex items-start gap-2\">
                     {/* Comment avatar */}
                     <div className="w-6 h-6 rounded-full bg-emerald-500/40 flex items-center justify-center text-gray-400 text-[10px] font-semibold flex-shrink-0 mt-0.5\">
-                      ?
+                      {(c.profiles?.username ?? "?")[0].toUpperCase()}
                     </div>
                     <div className="flex-1 bg-black/20 border border-white/5 rounded-lg px-3 py-2\">
                       <div className="flex items-center gap-2 mb-0.5\">
-                        <span className="text-xs font-medium text-gray-300\">anonymous</span>
+                        <span className="text-xs font-medium text-gray-300\">{c.profiles?.username ?? "anonymous"}</span>
                         <span className="text-[10px] text-gray-500\">{timeAgo(c.created_at)}</span>
                       </div>
                       <p className="text-xs text-gray-300 leading-relaxed\">{c.body}</p>
@@ -393,7 +393,7 @@ export default function Forum() {
       <nav className="relative z-10 bg-black/30 backdrop-blur-md px-8 py-4 flex justify-between items-center border-b border-white/10">
         <h1 className="text-3xl font-bold text-white font-fraunces">🌍 GeoQuest</h1>
         <div className="flex items-center gap-4">
-          <span className="text-gray-300 text-sm">Welcome, <span className="text-emerald-400 font-semibold">{user?.email?.split('@')[0] ?? "Player"}</span></span>
+          <span className="text-gray-300 text-sm">Welcome, <span className="text-emerald-400 font-semibold">{user?.user_metadata?.username ?? user?.email?.split('@')[0] ?? "Player"}</span></span>
           <button onClick={() => navigate("/dashboard")} className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-all duration-200">Dashboard</button>
           <button onClick={handleLogout} className="px-4 py-2 border border-emerald-500/50 text-gray-300 rounded-lg text-sm hover:bg-emerald-500/20 transition-all duration-200">Logout</button>
         </div>

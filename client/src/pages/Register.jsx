@@ -6,6 +6,7 @@ import StarFieldBackground from "../components/Backgrounds/StarFieldBackground"
 function Register() {
   const navigate = useNavigate()
   const { register } = useAuth()
+  const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -13,6 +14,11 @@ function Register() {
   const [registered, setRegistered] = useState(false)
 
   const handleRegister = async () => {
+    const trimmedUsername = username.trim()
+    if (trimmedUsername.length < 2 || trimmedUsername.length > 20) {
+      setError("Username must be between 2 and 20 characters")
+      return
+    }
     if (password.length < 6) {
       setError("Password must be at least 6 characters")
       return
@@ -21,7 +27,7 @@ function Register() {
       setError("Passwords do not match")
       return
     }
-    const { error } = await register(email, password)
+    const { error } = await register(email, password, trimmedUsername)
     if (error) {
       setError(error.message)
     } else {
@@ -60,20 +66,30 @@ function Register() {
         
         <div className="flex flex-col gap-4">
           <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="border border-emerald-500/50 rounded-lg px-4 py-3 text-gray-200 bg-[#0f1a12]/60 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+          />
+          <input
             type="email"
             placeholder="Email"
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="border border-emerald-500/50 rounded-lg px-4 py-3 text-gray-200 bg-[#0f1a12]/60 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
           />
           <input
             type="password"
             placeholder="Password"
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="border border-emerald-500/50 rounded-lg px-4 py-3 text-gray-200 bg-[#0f1a12]/60 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
           />
           <input
             type="password"
             placeholder="Confirm Password"
+            value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             className="border border-emerald-500/50 rounded-lg px-4 py-3 text-gray-200 bg-[#0f1a12]/60 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
           />
