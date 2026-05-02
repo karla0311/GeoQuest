@@ -167,15 +167,14 @@ useEffect(() => {
 
       // pick a random country from your local list
       const picked = countryData[Math.floor(Math.random() * countryData.length)];
-
-      setCountryList(names);
       
       // use FlagCDN with the JSON code
-      setCountry({ 
-        name: picked.name, 
-        flagUrl: `https://flagcdn.com/w640/${picked.code.toLowerCase()}.png` 
+      setCountry({
+        ...picked,
+        flagUrl: `https://flagcdn.com/w640/${picked.code.toLowerCase()}.png`
       });
 
+      setCountryList(names);
       startTime.current = Date.now();
     } catch (err) {
       console.error("Error loading local country data:", err);
@@ -242,10 +241,11 @@ const handleGuess = () => {
       navigate("/stage2", { 
         state: { 
           country: country.name, 
-          flagUrl: country.flagUrl, 
-          code: country.code
+          flagUrl: `https://flagcdn.com/w640/${country.code.toLowerCase()}.png`, 
+          code: country.code,
+          capital: country.capital
         } 
-      })
+      });
     }, 1500)
   } else if (newGuesses.length >= MAX_GUESSES) {
     setLost(true)
