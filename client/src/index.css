@@ -1,17 +1,7 @@
 @import "tailwindcss";
 
-/* @tailwind base;
-@tailwind components; */
-@tailwind utilities;
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap');
-
-/* font */
-body {
-  font-family: system-ui, sans-serif;
-}
-
-.font-fraunces {
-  font-family: "Fraunces", serif;
+@theme {
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
 }
 
 @keyframes starDrift {

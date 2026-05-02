@@ -114,13 +114,16 @@ export default function Results() {
     )
   }
 
-  // map the results array to its stage slots (flag = 1, globe = 2)
-  const resultsArray = Array.isArray(result) ? result : [result];
-  
+  // keep rows played within 15 minutes of the newest one as one session
+  const resultsArray = Array.isArray(result) ? result : [result]
+  const SESSION_GAP_MS = 15 * 60 * 1000
+  const newest = resultsArray.length ? new Date(resultsArray[0].played_at).getTime() : 0
+  const sessionRows = resultsArray.filter(r => newest - new Date(r.played_at).getTime() < SESSION_GAP_MS)
+
   const stages = {
-    1: resultsArray.find(r => Number(r.stage) === 1) || null,
-    2: resultsArray.find(r => Number(r.stage) === 2) || null,
-    3: resultsArray.find(r => Number(r.stage) === 3) || null,
+    1: sessionRows.find(r => Number(r.stage) === 1) || null,
+    2: sessionRows.find(r => Number(r.stage) === 2) || null,
+    3: sessionRows.find(r => Number(r.stage) === 3) || null,
   }
 
   // sum up stage scores for total
