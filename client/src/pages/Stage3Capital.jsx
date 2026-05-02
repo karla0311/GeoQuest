@@ -153,7 +153,12 @@ const Stage3Capital = () => {
     return "bg-zinc-800 text-white border-white/10 hover:bg-zinc-700";
   };
 
-  if (!rawCapital) return <div className="min-h-screen bg-zinc-900" />;
+  // direct URL hits skip prior stages, kick them back to the start
+  useEffect(() => {
+    if (!rawCapital) navigate("/game");
+  }, [rawCapital, navigate]);
+
+  if (!rawCapital) return null;
 
   return (
     <div className="min-h-screen bg-transparent flex flex-col items-center justify-center gap-6 py-10 px-4">

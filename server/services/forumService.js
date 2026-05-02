@@ -10,7 +10,8 @@ export const getAllPosts = async () => {
         id,
         body,
         created_at,
-        user_id
+        user_id,
+        profiles:user_id ( username )
       ),
       forum_votes ( id, user_id )
     `)
