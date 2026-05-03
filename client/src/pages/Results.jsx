@@ -151,11 +151,6 @@ export default function Results() {
           </p>
           <h1 className="text-4xl font-bold text-white mb-1">{totalScore}</h1>
           <p className="text-gray-400 text-sm">Total Score</p>
-          {!is_daily && (
-            <p className="text-zinc-500 text-xs mt-2 italic">
-              Stats not recorded in Practice Mode
-            </p>
-          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -12,18 +12,21 @@ function Dashboard() {
   const [stats, setStats] = useState(null)
   const [completedStages, setCompletedStages] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [mode, setMode] = useState("all"); // "all" | "daily" | "practice"
 
   useEffect(() => {
     // each request is independent, a failure on one shouldn't blank the other
-    API.get("/stats/user")
+    API.get("/stats/user", {
+      params: { mode },
+    })
       .then(res => setStats(res.data))
-      .catch(err => console.error("stats fetch failed", err))
+      .catch(err => console.error("stats fetch failed", err));
 
     API.get("/game/daily-status")
       .then(res => setCompletedStages(res.data ?? []))
       .catch(err => console.error("daily-status fetch failed", err))
-      .finally(() => setIsLoading(false))
-  }, [])
+      .finally(() => setIsLoading(false));
+  }, [mode]);
 
   const handleLogout = async () => {
     await logout()
@@ -107,6 +110,40 @@ function Dashboard() {
             )}
                 </div>
               </div>
+        <div className="flex justify-center gap-2 mb-6">
+          <button
+            onClick={() => setMode("all")}
+            className={`px-4 py-2 rounded-lg ${
+              mode === "all"
+                ? "bg-emerald-600 text-white"
+                : "bg-zinc-800 text-gray-400"
+            }`}
+          >
+            All Time
+          </button>
+
+          <button
+            onClick={() => setMode("daily")}
+            className={`px-4 py-2 rounded-lg ${
+              mode === "daily"
+                ? "bg-emerald-600 text-white"
+                : "bg-zinc-800 text-gray-400"
+            }`}
+          >
+            Daily Only
+          </button>
+
+          <button
+            onClick={() => setMode("practice")}
+            className={`px-4 py-2 rounded-lg ${
+              mode === "practice"
+                ? "bg-emerald-600 text-white"
+                : "bg-zinc-800 text-gray-400"
+            }`}
+          >
+            Practice Only
+          </button>
+        </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
