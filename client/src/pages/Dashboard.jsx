@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext"
 import StarFieldBackground from "../components/Backgrounds/StarFieldBackground"
 import API from "../api/api"
 import { Trophy } from 'lucide-react'
+import BrandLogo from "../components/BrandLogo"
 
 function Dashboard() {
   const navigate = useNavigate()
@@ -46,26 +47,8 @@ function Dashboard() {
       <StarFieldBackground />
 
       {/* Navbar */}
-<nav className="relative z-10 bg-black/30 backdrop-blur-md px-8 py-4 flex justify-between items-center border-b border-white/10">
-  <div className="flex items-center gap-3">
-    <svg 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="1.5" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-      className="w-8 h-8 text-white opacity-90"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="M2 12h20" />
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-    </svg>
-
-    <h1 className="text-xl text-white font-pixel uppercase tracking-tight leading-none translate-y-[3px]">
-      GeoQuest
-    </h1>
-  </div>
+      <nav className="relative z-10 bg-black/30 backdrop-blur-md px-8 py-4 flex justify-between items-center border-b border-white/10">
+        <BrandLogo />
         <div className="flex items-center gap-4">
           <span className="text-gray-300 text-sm">Welcome, <span className="text-emerald-400 font-semibold">{user?.user_metadata?.username ?? user?.email?.split('@')[0] ?? "Player"}</span></span>
           <button
