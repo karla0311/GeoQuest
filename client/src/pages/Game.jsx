@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom"
 import { submitGameResult } from "../api/gameService"
 import countryData from "../../countries.json"
 import StarFieldBackground from "../components/Backgrounds/StarFieldBackground"
+import { useLocation } from "react-router-dom";
+import { getDailyCountry } from "../utils/gameUtils";
 
 // number of tile columns and rows (more = smaller tiles)
 const COLS = 20
@@ -156,19 +158,22 @@ export default function Game() {
   const startTime = useRef(Date.now())
   const submitted = useRef(false)
   const navigate = useNavigate()
+  const location = useLocation();
+  const is_daily = location.state?.is_daily || false;
 
 useEffect(() => {
   const load = () => {
     try {
-      // extract names for the dropdown/search
-      const names = countryData
-        .map(c => c.name)
-        .sort((a, b) => a.localeCompare(b));
+      const names = countryData.map(c => c.name).sort((a, b) => a.localeCompare(b));
 
-      // pick a random country from your local list
-      const picked = countryData[Math.floor(Math.random() * countryData.length)];
+      // check if we are in Daily Mode or Free Play
+      let picked;
+      if (is_daily) {
+        picked = getDailyCountry();
+      } else {
+        picked = countryData[Math.floor(Math.random() * countryData.length)];
+      }
       
-      // use FlagCDN with the JSON code
       setCountry({
         ...picked,
         flagUrl: `https://flagcdn.com/w640/${picked.code.toLowerCase()}.png`
@@ -177,15 +182,13 @@ useEffect(() => {
       setCountryList(names);
       startTime.current = Date.now();
     } catch (err) {
-      console.error("Error loading local country data:", err);
       setFetchError(true);
     } finally {
       setLoading(false);
     }
   };
-
   load();
-}, []);
+}, [is_daily]);
 
   // filter countries as user types
   const handleInputChange = (e) => {
@@ -215,14 +218,28 @@ useEffect(() => {
   // (0 = scattered, 1 = fully assembled)
   const revealAmount = won ? 1 : Math.min(1, guesses.length / MAX_GUESSES)
 
-  // sends result once per game so a refresh after winning doesn't double-insert
-  const sendResult = (didWin, guessCount) => {
-    if (submitted.current) return
-    submitted.current = true
-    const time_taken = Math.round((Date.now() - startTime.current) / 1000)
-    const score = didWin ? Math.max(0, (MAX_GUESSES - guessCount + 1) * 100) : 0
-    submitGameResult({ score, stage: 1, time_taken, accuracy: didWin ? 100 : 0 })
-      .catch(err => console.error("failed to save game result", err))
+const sendResult = (didWin, guessCount) => {
+  if (submitted.current) return;
+  submitted.current = true;
+  
+  if (is_daily && didWin) {
+    localStorage.setItem("last_daily_played", new Date().toISOString().split('T')[0]);
+  }
+  const time_taken = Math.round((Date.now() - startTime.current) / 1000);
+  const score = didWin ? Math.max(0, (MAX_GUESSES - guessCount + 1) * 100) : 0;
+
+  console.log("SUBMITTING STAGE 1. is_daily value is:", is_daily);
+  submitGameResult({ 
+    score, 
+    stage: 1, 
+    time_taken, 
+    accuracy: didWin ? 100 : 0, 
+    is_daily: is_daily // this ensures the DB knows if it's practice or daily
+  })
+  .then(() => {
+    if (!is_daily) console.log("Practice result saved for Results display.");
+  })
+  .catch(err => console.error("failed to save game result", err));
   }
 
 const handleGuess = () => {
@@ -243,7 +260,8 @@ const handleGuess = () => {
           country: country.name, 
           flagUrl: `https://flagcdn.com/w640/${country.code.toLowerCase()}.png`, 
           code: country.code,
-          capital: country.capital
+          capital: country.capital,
+          is_daily: is_daily
         } 
       });
     }, 1500)
@@ -254,7 +272,8 @@ const handleGuess = () => {
       navigate("/stage2", { 
         state: { 
           country: country.name, 
-          flagUrl: country.flagUrl 
+          flagUrl: country.flagUrl,
+          is_daily: is_daily 
         } 
       })
     }, 1500)

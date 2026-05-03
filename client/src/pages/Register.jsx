@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import StarFieldBackground from "../components/Backgrounds/StarFieldBackground"
+import { Mail } from 'lucide-react';
 
 function Register() {
   const navigate = useNavigate()
@@ -41,11 +42,13 @@ function Register() {
         <StarFieldBackground />
         
         <div className="relative z-20 w-full max-w-md bg-black/25 backdrop-blur-md p-10 rounded-3xl border border-white/10 shadow-2xl text-center">
-          <div className="text-5xl mb-5">✉️</div>
+          <div className="flex justify-center mb-6">
+            <Mail className="w-16 h-16 text-white opacity-90" strokeWidth={1.5} />
+          </div>
           <h2 className="text-3xl font-bold text-white mb-4 font-fraunces">Check Your Email</h2>
           <p className="text-gray-300 mb-8">
             We sent a confirmation link to <span className="text-emerald-400 font-semibold">{email}</span>. Click the link to verify your account, then log in.
-          </p>
+          </p>         
           <button
             onClick={() => navigate("/login")}
             className="bg-emerald-500 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-emerald-600 hover:shadow-[0_0_25px_rgba(16,185,129,0.35)] transform hover:scale-105 transition-all duration-300 w-full"

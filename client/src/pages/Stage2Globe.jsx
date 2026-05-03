@@ -31,6 +31,7 @@ const getCentroid = (feature) => {
 export default function Stage2Globe() {
   const { state } = useLocation()
   const navigate = useNavigate()
+  const is_daily = state?.is_daily || false;
   const globeRef = useRef()
   const answerFeatureRef = useRef(null)
 
@@ -92,6 +93,21 @@ useEffect(() => {
     }
   }, [countries])
 
+  const saveResult = (didWin, guessCount) => {
+    if (submitted.current) return;
+    submitted.current = true;
+    const time_taken = Math.round((Date.now() - startTime.current) / 1000);
+    const score = didWin ? Math.max(0, (MAX_GUESSES - guessCount + 1) * 100) : 0;
+    
+    submitGameResult({ 
+      score, 
+      stage: 2, 
+      time_taken, 
+      accuracy: didWin ? 100 : 0, 
+      is_daily: is_daily 
+    }).catch(err => console.error("failed to save stage 2 result", err));
+  };
+
   const handleCountryClick = (polygon) => {
     if (!polygon || done || !answerFeatureRef.current) return;
 
@@ -120,6 +136,7 @@ useEffect(() => {
           capital: state.capital,
           flagUrl: state.flagUrl,
           code: state.code,
+          is_daily: is_daily,
             score: (state.score || 0) + 100
           } 
         });
@@ -141,17 +158,8 @@ useEffect(() => {
       setDone(true);
       setWon(false);
       saveResult(false, updatedGuesses.length);
-      setTimeout(() => navigate("/results"), 2500);
+      setTimeout(() => navigate("/results", { state: { is_daily: is_daily } }), 2500);
     }
-  }
-
-  const saveResult = (didWin, guessCount) => {
-    if (submitted.current) return
-    submitted.current = true
-    const time_taken = Math.round((Date.now() - startTime.current) / 1000)
-    const score = didWin ? Math.max(0, (MAX_GUESSES - guessCount + 1) * 100) : 0
-    submitGameResult({ score, stage: 2, time_taken, accuracy: didWin ? 100 : 0 })
-      .catch(err => console.error("failed to save stage 2 result", err))
   }
 
   const getPolygonColor = (polygon) => {

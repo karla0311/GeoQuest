@@ -3,14 +3,27 @@ import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import StarFieldBackground from "../components/Backgrounds/StarFieldBackground"
 import API from "../api/api"
+import { Trophy } from 'lucide-react';
 
 function Dashboard() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const [stats, setStats] = useState(null)
+  const [completedStages, setCompletedStages] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    API.get("/stats/user").then(res => setStats(res.data))
+ useEffect(() => {
+    Promise.all([
+      API.get("/stats/user"),
+      API.get("/game/daily-status")
+    ]).then(([statsRes, statusRes]) => {
+      setStats(statsRes.data)
+      setCompletedStages(statusRes.data)
+      setIsLoading(false) // Data is here, stop loading
+    }).catch(err => {
+      console.error("Error fetching data:", err)
+      setIsLoading(false)
+    })
   }, [])
 
   const handleLogout = async () => {
@@ -18,13 +31,43 @@ function Dashboard() {
     navigate("/login")
   }
 
+  const startNewGame = (is_daily) => {
+    if (is_daily) {
+      if (completedStages.length >= 3) {
+        alert("You've already finished today's Daily Challenge! Come back tomorrow.")
+        return
+      }
+      navigate("/game", { state: { is_daily: true, startStage: 1 } });
+    } else {
+      navigate("/game", { state: { is_daily: false } });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-transparent">
       <StarFieldBackground />
 
       {/* Navbar */}
-      <nav className="relative z-10 bg-black/30 backdrop-blur-md px-8 py-4 flex justify-between items-center border-b border-white/10">
-        <h1 className="text-3xl font-bold text-white font-fraunces">🌍 GeoQuest</h1>
+<nav className="relative z-10 bg-black/30 backdrop-blur-md px-8 py-4 flex justify-between items-center border-b border-white/10">
+  <div className="flex items-center gap-3">
+    <svg 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="1.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className="w-8 h-8 text-white opacity-90"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M2 12h20" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </svg>
+
+    <h1 className="text-xl text-white font-pixel uppercase tracking-tight leading-none translate-y-[3px]">
+      GeoQuest
+    </h1>
+  </div>
         <div className="flex items-center gap-4">
           <span className="text-gray-300 text-sm">Welcome, <span className="text-emerald-400 font-semibold">{user?.user_metadata?.username ?? user?.email?.split('@')[0] ?? "Player"}</span></span>
           <button
@@ -45,18 +88,44 @@ function Dashboard() {
       <div className="relative z-10 max-w-6xl mx-auto px-8 py-12">
 
         {/* Quick Start Hero */}
-        <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl p-10 mb-12 flex justify-between items-center shadow-xl border border-emerald-500/30 hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all duration-300">
-          <div>
-            <h2 className="text-3xl font-bold mb-2 font-fraunces"> Ready for a Challenge?</h2>
-            <p className="text-white">Test your geography skills and climb the leaderboard.</p>
+        <div className="bg-black/25 backdrop-blur-md rounded-2xl p-10 mb-12 flex flex-col md:flex-row justify-between items-center shadow-xl border border-white/10">
+          <div className="text-center md:text-left mb-6 md:mb-0">
+            <h2 className="text-3xl font-bold mb-2 font-fraunces text-white">Choose Your Journey</h2>
+            <p className="text-gray-400">Play the daily challenge for the leaderboard, or sharpen your skills in practice.</p>
           </div>
-          <button
-            onClick={() => navigate("/game")}
-            className="px-8 py-4 bg-white text-emerald-500 rounded-xl font-bold text-lg hover:bg-gray-100 transform hover:scale-105 transition-all duration-200 shadow-lg"
-          >
-            Start Game
-          </button>
-        </div>
+          
+          <div className="flex flex-col sm:flex-row gap-4">
+            {/* Practice Mode Button */}
+            <button
+              onClick={() => startNewGame(false)}
+              className="px-6 py-4 border border-white/20 text-white rounded-xl font-bold text-lg hover:bg-white/10 transition-all duration-200"
+            >
+              Practice Mode
+            </button>
+
+            {/* Daily Challenge Button */}
+            {isLoading ? (
+              <button className="px-8 py-4 rounded-xl font-bold text-lg bg-gray-700 text-gray-400 animate-pulse cursor-wait">
+                Loading...
+              </button>
+            ) : (
+              <button
+                onClick={
+                  completedStages.length >= 3 
+                    ? () => navigate("/results", { state: { is_daily: true } }) 
+                    : () => startNewGame(true)
+                }
+                className={`px-8 py-4 rounded-xl font-bold text-lg transition-all ${
+                  completedStages.length >= 3 
+                  ? "bg-blue-600 text-white hover:bg-blue-700" 
+                  : "bg-emerald-500 text-white hover:bg-emerald-600"
+                }`}
+              >
+                {completedStages.length >= 3 ? "View Today's Results" : "Daily Challenge"}
+              </button>
+            )}
+                </div>
+              </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -79,17 +148,22 @@ function Dashboard() {
 
         {/* Quick Links */}
         <div className="grid grid-cols-2 gap-6">
-          <div className="bg-black/25 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all duration-300">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="text-2xl font-bold text-white font-fraunces mb-1">🏆 Leaderboard</h3>
-                <p className="text-gray-400 text-sm">Compete with players worldwide</p>
-              </div>
+          <div className="bg-black/25 backdrop-blur-md rounded-2xl p-8 border border-white/10 
+            hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] 
+            transition-all duration-300 flex flex-col items-center text-center">
+            <div className="flex flex-col items-center mb-4">
+              <Trophy className="w-10 h-10 text-white opacity-90 mb-3" strokeWidth={1.5} />
+              <h3 className="text-2xl font-bold text-white font-fraunces">Leaderboard</h3>
+              <p className="text-gray-400 text-sm">Compete with players worldwide</p>
             </div>
-            <button onClick={() => navigate("/leaderboard")} className="text-emerald-400 hover:text-white font-semibold text-sm transition-colors">View Rankings →</button>
+            <button 
+              onClick={() => navigate("/leaderboard")} 
+              className="text-emerald-400 hover:text-white font-semibold text-sm transition-colors"
+            >
+              View Rankings →
+            </button>
           </div>
         </div>
-
       </div>
     </div>
   )

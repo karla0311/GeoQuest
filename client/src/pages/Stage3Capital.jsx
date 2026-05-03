@@ -6,6 +6,7 @@ import { submitGameResult } from "../api/gameService";
 const Stage3Capital = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const is_daily = state?.is_daily || false;
 
   const [attempts, setAttempts] = useState([]);
   const [currentGuess, setCurrentGuess] = useState([]);
@@ -76,22 +77,24 @@ const Stage3Capital = () => {
     setCurrentGuess(prev => prev.slice(0, -1));
   }, []);
 
-  // save the stage row then head to results. give losses a longer pause so the answer reveal is readable
   const saveAndNav = useCallback((didWin) => {
     if (!submitted.current) {
       submitted.current = true;
       const time_taken = Math.round((Date.now() - startTime.current) / 1000);
       const score = didWin ? 250 : 0;
+
       submitGameResult({
         score,
         stage: 3,
         time_taken,
         accuracy: didWin ? 100 : 0,
         country: countryName,
+        is_daily: is_daily,
       }).catch(err => console.error("failed to save stage 3 result", err));
     }
-    setTimeout(() => navigate("/results"), didWin ? 2000 : 3500);
-  }, [navigate, countryName]);
+
+    setTimeout(() => navigate("/results", { state: { is_daily } }), didWin ? 2000 : 3500);
+  }, [navigate, countryName, is_daily]);
 
   const submitGuess = useCallback(() => {
     if (currentGuess.length !== wordLength || isGameOver) return;

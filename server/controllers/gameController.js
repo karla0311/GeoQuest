@@ -10,7 +10,7 @@ export const getLastResult = async (req, res) => {
 }
 
 export const submitResult = async (req, res) => {
-  const { score, stage, time_taken, accuracy } = req.body
+  const { score, stage, time_taken, accuracy, is_daily } = req.body
 
   const isValid =
     Number.isInteger(score) && score >= 0 &&
@@ -24,9 +24,18 @@ export const submitResult = async (req, res) => {
 
   try {
     const userId = req.user.id
-    const result = await gameService.saveResult(userId, { score, stage, time_taken, accuracy })
+    const result = await gameService.saveResult(userId, { score, stage, time_taken, accuracy, is_daily })
     res.status(201).json(result)
   } catch (err) {
     res.status(500).json({ error: "Failed to save result" })
   }
 }
+
+export const checkDailyStatus = async (req, res) => {
+  try {
+    const status = await gameService.getDailyStatus(req.user.id);
+    res.json(status);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to check daily status" });
+  }
+};
