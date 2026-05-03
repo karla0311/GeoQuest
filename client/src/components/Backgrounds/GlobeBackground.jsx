@@ -18,7 +18,7 @@ function Earth() {
 
   return (
     <mesh ref={ref}>
-      <sphereGeometry args={[2.5, 64, 64]} />
+      <sphereGeometry args={[2.7, 64, 64]} />
       <meshStandardMaterial
         map={texture}
         roughness={1}
@@ -31,9 +31,7 @@ function Earth() {
 export default function GlobeBackground() {
   return (
     <div className="fixed inset-0 z-0 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-[#0b1a12] to-[#0f1a12]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(120,200,160,0.12),transparent_50%),radial-gradient(circle_at_70%_70%,rgba(255,255,255,0.05),transparent_50%)]" />
-
+      
       <Canvas
         style={{
           width: "100vw",
