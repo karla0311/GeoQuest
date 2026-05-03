@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import StarFieldBackground from "../components/Backgrounds/StarFieldBackground"
 import API from "../api/api"
-import { Trophy } from 'lucide-react';
+import { Trophy } from 'lucide-react'
 
 function Dashboard() {
   const navigate = useNavigate()
@@ -12,18 +12,16 @@ function Dashboard() {
   const [completedStages, setCompletedStages] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
- useEffect(() => {
-    Promise.all([
-      API.get("/stats/user"),
-      API.get("/game/daily-status")
-    ]).then(([statsRes, statusRes]) => {
-      setStats(statsRes.data)
-      setCompletedStages(statusRes.data)
-      setIsLoading(false) // Data is here, stop loading
-    }).catch(err => {
-      console.error("Error fetching data:", err)
-      setIsLoading(false)
-    })
+  useEffect(() => {
+    // each request is independent, a failure on one shouldn't blank the other
+    API.get("/stats/user")
+      .then(res => setStats(res.data))
+      .catch(err => console.error("stats fetch failed", err))
+
+    API.get("/game/daily-status")
+      .then(res => setCompletedStages(res.data ?? []))
+      .catch(err => console.error("daily-status fetch failed", err))
+      .finally(() => setIsLoading(false))
   }, [])
 
   const handleLogout = async () => {

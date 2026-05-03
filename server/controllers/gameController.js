@@ -16,7 +16,8 @@ export const submitResult = async (req, res) => {
     Number.isInteger(score) && score >= 0 &&
     Number.isInteger(stage) && stage >= 1 &&
     Number.isInteger(time_taken) && time_taken >= 0 &&
-    Number.isInteger(accuracy) && accuracy >= 0 && accuracy <= 100
+    Number.isInteger(accuracy) && accuracy >= 0 && accuracy <= 100 &&
+    (is_daily === undefined || typeof is_daily === "boolean")
 
   if (!isValid) {
     return res.status(400).json({ error: "Invalid result data" })
@@ -24,7 +25,7 @@ export const submitResult = async (req, res) => {
 
   try {
     const userId = req.user.id
-    const result = await gameService.saveResult(userId, { score, stage, time_taken, accuracy, is_daily })
+    const result = await gameService.saveResult(userId, { score, stage, time_taken, accuracy, is_daily: is_daily ?? false })
     res.status(201).json(result)
   } catch (err) {
     res.status(500).json({ error: "Failed to save result" })

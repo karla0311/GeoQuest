@@ -221,26 +221,18 @@ useEffect(() => {
 const sendResult = (didWin, guessCount) => {
   if (submitted.current) return;
   submitted.current = true;
-  
-  if (is_daily && didWin) {
-    localStorage.setItem("last_daily_played", new Date().toISOString().split('T')[0]);
-  }
+
   const time_taken = Math.round((Date.now() - startTime.current) / 1000);
   const score = didWin ? Math.max(0, (MAX_GUESSES - guessCount + 1) * 100) : 0;
 
-  console.log("SUBMITTING STAGE 1. is_daily value is:", is_daily);
-  submitGameResult({ 
-    score, 
-    stage: 1, 
-    time_taken, 
-    accuracy: didWin ? 100 : 0, 
-    is_daily: is_daily // this ensures the DB knows if it's practice or daily
-  })
-  .then(() => {
-    if (!is_daily) console.log("Practice result saved for Results display.");
-  })
-  .catch(err => console.error("failed to save game result", err));
-  }
+  submitGameResult({
+    score,
+    stage: 1,
+    time_taken,
+    accuracy: didWin ? 100 : 0,
+    is_daily,
+  }).catch(err => console.error("failed to save game result", err));
+}
 
 const handleGuess = () => {
   if (!input.trim() || won || lost) return
