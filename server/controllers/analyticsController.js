@@ -1,4 +1,5 @@
 import supabase from "../config/supabaseClient.js";
+import { getUserStats as getUserStatsFromService } from "../services/analyticsService.js"; // ✅ ADD THIS
 
 export async function getUserStats(req, res) {
   const userId = req.user.id;
@@ -23,4 +24,18 @@ export async function getUserStats(req, res) {
   const avg_accuracy = Math.round(data.reduce((sum, r) => sum + (r.accuracy ?? 0), 0) / games_played);
 
   res.json({ games_played, avg_score, avg_time, avg_accuracy });
+}
+
+export async function getUserStatsController(req, res) {
+  try {
+    const userId = req.user.id;
+    const { mode } = req.query;
+
+    const stats = await getUserStatsFromService(userId, mode || "all");
+
+    res.json(stats);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch stats" });
+  }
 }
