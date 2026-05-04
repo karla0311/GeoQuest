@@ -165,7 +165,10 @@ function Dashboard() {
         </div>
 
         {/* Quick Links */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Empty div for the first column to push the card to the center */}
+          <div className="hidden md:block"></div>
+
           <div className="bg-black/25 backdrop-blur-md rounded-2xl p-8 border border-white/10 
             hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] 
             transition-all duration-300 flex flex-col items-center text-center">
@@ -181,6 +184,7 @@ function Dashboard() {
               View Rankings →
             </button>
           </div>
+          <div className="hidden md:block"></div>
         </div>
       </div>
     </div>

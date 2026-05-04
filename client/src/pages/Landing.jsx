@@ -41,7 +41,7 @@ function Landing() {
               <button
                 onClick={() => navigate("/login")}
                 className="px-8 py-4 bg-emerald-500 text-white rounded-xl text-lg font-semibold
-                hover:bg-emerald-600 hover:shadow-[0_0_25px_rgba(16,185,129,0.35)]
+                hover:bg-white hover:text-emerald-600 hover:shadow-[0_0_25px_rgba(16,185,129,0.35)]
                 transform hover:scale-105 transition-all duration-300 group flex items-center gap-2"
               >
                 <span>PLAY</span>
@@ -75,14 +75,14 @@ function Landing() {
                 hover:bg-white/30 hover:-translate-y-2 transition-all duration-300 border border-white/5">
                 <MapPin className="w-10 h-10 text-white mx-auto mb-3" strokeWidth={1.5} />
                 <h3 className="text-lg font-semibold text-white mb-2">Map Mode</h3>
-                <p className="text-gray-300 text-sm">Pin countries on a global map</p>
+                <p className="text-gray-300 text-sm">Pin countries across the globe</p>
               </div>
 
               <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3
                 hover:bg-white/30 hover:-translate-y-2 transition-all duration-300 border border-white/5">
                 <Landmark className="w-10 h-10 text-white mx-auto mb-3" strokeWidth={1.5} />
                 <h3 className="text-lg font-semibold text-white mb-2">Capitals</h3>
-                <p className="text-gray-300 text-sm">Match capitals and languages</p>
+                <p className="text-gray-300 text-sm">Solve the global capital puzzle</p>
               </div>
             </div>
           </div>

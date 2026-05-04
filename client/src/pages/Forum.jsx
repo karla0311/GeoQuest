@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext"
 import StarFieldBackground from "../components/Backgrounds/StarFieldBackground"
 import BrandLogo from "../components/BrandLogo"
 import { getPosts, createPost, votePost, deletePost, updatePost, addComment } from "../api/forumService"
+import { Sparkles, ThumbsUp, MessageSquare, Reply, Edit3, Trash2, Tag, BarChart3, Rocket, MessageCircle } from "lucide-react"
 
 const TABS = ["Latest", "Hot", "Unanswered"]
 const POPULAR_TAGS = ["flags", "capitals", "strategy", "daily-challenge", "tips", "map-stage"]
@@ -177,8 +178,9 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
           <div className="flex items-center gap-2 flex-wrap mb-1">
             <h3 className="text-base font-semibold text-white leading-snug">{post.title}</h3>
             {isNew && (
-              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-emerald-500/50 text-emerald-400 border border-emerald-500/40 flex-shrink-0\">
-                ✨ NEW
+              <span className="flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded bg-emerald-500/50 text-emerald-400 border border-emerald-500/40 flex-shrink-0\">
+                <Sparkles className="text-yellow-400" size={10} />
+                NEW
               </span>
             )}
           </div>
@@ -203,7 +205,8 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
                 hasVoted ? "text-emerald-400 font-semibold" : "hover:text-emerald-400"
               }`}
             >
-              👍 <span>{voteCount}</span>
+              <ThumbsUp size={14} fill={hasVoted ? "currentColor" : "none"} />
+              <span>{voteCount}</span>
             </button>
 
             {/* 💬 Toggle comments */}
@@ -211,28 +214,32 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
               onClick={() => setShowComments(!showComments)}
               className="hover:text-white transition-colors flex items-center gap-1.5"
             >
-              💬 <span>{comments.length}</span>
+              <MessageSquare size={14} />
+              <span>{comments.length}</span>
             </button>
 
             {/* ↩ Reply */}
             <button
               onClick={() => { setShowCommentBox(!showCommentBox); setShowComments(true) }}
-              className="hover:text-emerald-400 transition-colors"
+              className="hover:text-emerald-400 transition-colors flex items-center gap-1.5"
             >
-              ↩️ Reply
+              <Reply size={14} />
+              <span>Reply</span>
             </button>
 
             {/* ✏️ Edit (owner only) */}
             {isOwner && (
-              <button onClick={() => onEdit(post)} className="hover:text-yellow-400 transition-colors">
-                ✏️ Edit
+              <button onClick={() => onEdit(post)} className="hover:text-yellow-400 transition-colors flex items-center gap-1.5">
+                <Edit3 size={14} />
+                <span>Edit</span>
               </button>
             )}
 
             {/* 🗑 Delete (owner only) */}
             {isOwner && (
-              <button onClick={() => onDelete(post.id)} className="hover:text-red-400 transition-colors">
-                🗑️ Delete
+              <button onClick={() => onDelete(post.id)} className="hover:text-red-400 transition-colors flex items-center gap-1.5">
+                <Trash2 size={14} />
+                <span>Delete</span>
               </button>
             )}
           </div>
@@ -407,7 +414,9 @@ export default function Forum() {
 
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-white font-fraunces">💬 Community Forum</h2>
+              <h2 className="text-3xl font-bold text-white font-fraunces flex items-center gap-3">
+                <MessageCircle className="text-emerald-400" size={32} />
+                Community Forum</h2>
               <p className="text-gray-400 text-sm mt-2">Share strategies, tips, and geography insights.</p>
             </div>
             <button
@@ -437,7 +446,8 @@ export default function Forum() {
 
           {tagFilter && (
             <div className="flex items-center gap-2 mb-4 text-sm text-gray-300 bg-emerald-500/20 border border-emerald-500/30 rounded-lg px-4 py-2 w-fit">
-              🏷️ <span className="text-emerald-400 font-medium">{tagFilter}</span>
+              <Tag size={14} className="text-emerald-400" />
+              <span className="text-emerald-400 font-medium">{tagFilter}</span>
               <button onClick={() => setTagFilter(null)} className="ml-2 text-xs bg-white/10 hover:bg-white/20 px-2 py-0.5 rounded transition-colors">
                 ✕
               </button>
@@ -458,8 +468,9 @@ export default function Forum() {
           <div className="flex flex-col gap-4">
             {displayedPosts.length === 0 && !fetchError ? (
               <div className="text-center py-16 text-gray-500 bg-black/20 border border-white/10 rounded-xl p-8">
+                <Rocket size={48} className="text-gray-600 mb-4 opacity-70" />
                 <p className="text-lg mb-2 font-fraunces">No posts yet.</p>
-                <p className="text-sm">Be the first to start a discussion! 🚀</p>
+                <p className="text-sm">Be the first to start a discussion!</p>
               </div>
             ) : (
               displayedPosts.map((post) => (
@@ -480,7 +491,10 @@ export default function Forum() {
         {/* ── Right: sidebar ── */}
         <aside className="w-72 flex-shrink-0 hidden lg:flex flex-col gap-6">
           <div className="bg-black/25 backdrop-blur-md rounded-2xl p-6 border border-white/10">
-            <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-4">🏷️ Popular Tags</h3>
+            <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <Tag size={16} className="text-emerald-500" />
+              Popular Tags
+            </h3>
             <div className="flex flex-wrap gap-2">
               {POPULAR_TAGS.map((tag) => (
                 <button
@@ -499,7 +513,10 @@ export default function Forum() {
           </div>
 
           <div className="bg-black/25 backdrop-blur-md rounded-2xl p-6 border border-white/10">
-            <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-4">📊 Community</h3>
+            <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <BarChart3 size={16} className="text-emerald-500" />
+              Community
+            </h3>
             <div className="flex flex-col gap-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-400">Total posts</span>
