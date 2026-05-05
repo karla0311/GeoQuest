@@ -2,6 +2,16 @@ import supabase from "../config/supabaseClient.js";
 
 const SESSION_GAP = 15 * 60 * 1000;
 
+// ✅ helper → get start of TODAY (UTC-safe)
+function getStartOfToday() {
+  const now = new Date();
+  return new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate()
+  ));
+}
+
 // ── GROUP DAILY SESSIONS ─────────────────────────────────────
 function groupSessions(rows) {
   const sessions = [];
@@ -47,7 +57,7 @@ function groupSessions(rows) {
 
 // ── MAIN LEADERBOARD LOGIC ───────────────────────────────────
 export async function getLeaderboard(is_daily) {
-  const { data, error } = await supabase
+  let query = supabase
     .from("game_results")
     .select(`
       user_id,
@@ -60,6 +70,14 @@ export async function getLeaderboard(is_daily) {
     `)
     .eq("is_daily", is_daily);
 
+  // 🔥🔥🔥 CRITICAL FIX → ONLY TODAY FOR DAILY MODE
+  if (is_daily) {
+    const startOfToday = getStartOfToday().toISOString();
+    query = query.gte("played_at", startOfToday);
+  }
+
+  const { data, error } = await query;
+
   if (error) throw error;
 
   let leaderboardData;
@@ -67,7 +85,7 @@ export async function getLeaderboard(is_daily) {
   if (is_daily) {
     leaderboardData = groupSessions(data);
   } else {
-    // PRACTICE MODE → NO DUPLICATES PER USER
+    // PRACTICE MODE → aggregate per user
     const map = {};
 
     data.forEach(row => {

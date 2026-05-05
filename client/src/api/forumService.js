@@ -21,3 +21,9 @@ export const updatePost = (id, data) =>
 
 export const deletePost = (id) =>
   API.delete(`/forum/${id}`)
+
+export const updateComment = (id, body) =>
+  API.put(`/forum/comment/${id}`, { body })
+
+export const deleteComment = (id) =>
+  API.delete(`/forum/comment/${id}`)

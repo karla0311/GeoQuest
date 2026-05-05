@@ -12,6 +12,15 @@ function formatTime(seconds) {
   return `${m}m ${s}s`;
 }
 
+function formatTodayDate() {
+  const today = new Date();
+
+  return today.toLocaleDateString("en-US", {
+    month: "long",   
+    day: "numeric", 
+  });
+}
+
 export default function Leaderboard() {
   const [data, setData] = useState(null);
   const [mode, setMode] = useState(true);
@@ -88,7 +97,12 @@ export default function Leaderboard() {
         
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-white">Leaderboard</h1>
+          <h1 className="text-3xl font-bold text-white">
+            {mode
+              ? `Today's Leaderboard (${formatTodayDate()})`
+              : "Practice Leaderboard"}
+          </h1>
+
           <p className="text-gray-400 text-sm">
             {mode ? "Daily Challenge" : "Practice Mode"}
           </p>
@@ -120,7 +134,7 @@ export default function Leaderboard() {
 
           {data.top10?.length === 0 ? (
             <p className="text-gray-500 text-sm text-center py-4">
-              No rankings yet. Be the first 👀
+              No rankings yet. Be the first
             </p>
           ) : (
             <div className="flex flex-col gap-2">
