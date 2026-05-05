@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import StarFieldBackground from "../components/Backgrounds/StarFieldBackground"
 import BrandLogo from "../components/BrandLogo"
-import { getPosts, createPost, votePost, deletePost, updatePost, addComment } from "../api/forumService"
-import { Sparkles, ThumbsUp, MessageSquare, Reply, Edit3, Trash2, Tag, BarChart3, Rocket, MessageCircle } from "lucide-react"
+import { getPosts, createPost, votePost, deletePost, updatePost, addComment, updateComment, deleteComment } from "../api/forumService"
+import { Sparkles, ThumbsUp, MessageSquare, Reply, Edit3, Trash2, Tag, BarChart3, Rocket, MessageCircle, Check, X } from "lucide-react"
 
 const TABS = ["Latest", "Hot", "Unanswered"]
 const POPULAR_TAGS = ["flags", "capitals", "strategy", "daily-challenge", "tips", "map-stage"]
@@ -110,10 +110,10 @@ function EditModal({ open, post, onClose, onSubmit }) {
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-black/40 backdrop-blur-md border border-white/20 rounded-2xl w-full max-w-lg p-8 flex flex-col gap-4 shadow-2xl">
-        <h2 className="text-2xl font-bold text-white font-fraunces\">Edit Post</h2>
+        <h2 className="text-2xl font-bold text-white font-fraunces">Edit Post</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-400 uppercase tracking-wider font-semibold\">Title</label>
+            <label className="text-xs text-gray-400 uppercase tracking-wider font-semibold">Title</label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -121,7 +121,7 @@ function EditModal({ open, post, onClose, onSubmit }) {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-400 uppercase tracking-wider font-semibold\">Body</label>
+            <label className="text-xs text-gray-400 uppercase tracking-wider font-semibold">Body</label>
             <textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
@@ -144,7 +144,7 @@ function EditModal({ open, post, onClose, onSubmit }) {
 }
 
 // ── Post card ─────────────────────────────────────────────────────────────────
-function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
+function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment, onEditComment, onDeleteComment }) {
   const isNew = (Date.now() - new Date(post.created_at)) / 1000 < 3600
   const isOwner = currentUser?.id === post.user_id
 
@@ -157,12 +157,33 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
   const [showComments, setShowComments] = useState(false)
   const [showCommentBox, setShowCommentBox] = useState(false)
 
+  // Track which comment is being edited and its draft text
+  const [editingCommentId, setEditingCommentId] = useState(null)
+  const [editingCommentText, setEditingCommentText] = useState("")
+
   const handleCommentSubmit = () => {
     if (!comment.trim()) return
     onComment(post.id, comment.trim())
     setComment("")
     setShowCommentBox(false)
     setShowComments(true)
+  }
+
+  const handleEditCommentStart = (c) => {
+    setEditingCommentId(c.id)
+    setEditingCommentText(c.body)
+  }
+
+  const handleEditCommentSave = (commentId) => {
+    if (!editingCommentText.trim()) return
+    onEditComment(commentId, editingCommentText.trim())
+    setEditingCommentId(null)
+    setEditingCommentText("")
+  }
+
+  const handleEditCommentCancel = () => {
+    setEditingCommentId(null)
+    setEditingCommentText("")
   }
 
   return (
@@ -178,7 +199,7 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
           <div className="flex items-center gap-2 flex-wrap mb-1">
             <h3 className="text-base font-semibold text-white leading-snug">{post.title}</h3>
             {isNew && (
-              <span className="flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded bg-emerald-500/50 text-emerald-400 border border-emerald-500/40 flex-shrink-0\">
+              <span className="flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded bg-emerald-500/50 text-emerald-400 border border-emerald-500/40 flex-shrink-0">
                 <Sparkles className="text-yellow-400" size={10} />
                 NEW
               </span>
@@ -196,9 +217,9 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
           </div>
 
           {/* ACTIONS */}
-          <div className="flex items-center gap-4 text-xs text-gray-400 flex-wrap\">
+          <div className="flex items-center gap-4 text-xs text-gray-400 flex-wrap">
 
-            {/* 👍 Upvote — toggles, highlights if already voted */}
+            {/* 👍 Upvote */}
             <button
               onClick={() => onVote(post.id)}
               className={`flex items-center gap-1.5 transition-all ${
@@ -227,7 +248,7 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
               <span>Reply</span>
             </button>
 
-            {/* ✏️ Edit (owner only) */}
+            {/* ✏️ Edit post (owner only) */}
             {isOwner && (
               <button onClick={() => onEdit(post)} className="hover:text-yellow-400 transition-colors flex items-center gap-1.5">
                 <Edit3 size={14} />
@@ -235,7 +256,7 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
               </button>
             )}
 
-            {/* 🗑 Delete (owner only) */}
+            {/* 🗑 Delete post (owner only) */}
             {isOwner && (
               <button onClick={() => onDelete(post.id)} className="hover:text-red-400 transition-colors flex items-center gap-1.5">
                 <Trash2 size={14} />
@@ -246,7 +267,7 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
 
           {/* COMMENT INPUT */}
           {showCommentBox && (
-            <div className="mt-4 flex gap-2\">
+            <div className="mt-4 flex gap-2">
               <input
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
@@ -266,31 +287,94 @@ function PostCard({ post, currentUser, onVote, onDelete, onEdit, onComment }) {
 
           {/* COMMENTS LIST */}
           {showComments && comments.length > 0 && (
-            <div className="mt-4 flex flex-col gap-2 border-t border-white/10 pt-3\">
+            <div className="mt-4 flex flex-col gap-2 border-t border-white/10 pt-3">
               {comments
                 .slice()
                 .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-                .map((c) => (
-                  <div key={c.id} className="flex items-start gap-2\">
-                    {/* Comment avatar */}
-                    <div className="w-6 h-6 rounded-full bg-emerald-500/40 flex items-center justify-center text-gray-400 text-[10px] font-semibold flex-shrink-0 mt-0.5\">
-                      {(c.profiles?.username ?? "?")[0].toUpperCase()}
-                    </div>
-                    <div className="flex-1 bg-black/20 border border-white/5 rounded-lg px-3 py-2\">
-                      <div className="flex items-center gap-2 mb-0.5\">
-                        <span className="text-xs font-medium text-gray-300\">{c.profiles?.username ?? "anonymous"}</span>
-                        <span className="text-[10px] text-gray-500\">{timeAgo(c.created_at)}</span>
+                .map((c) => {
+                  const isCommentOwner = currentUser?.id === c.user_id
+                  const isEditing = editingCommentId === c.id
+
+                  return (
+                    <div key={c.id} className="flex items-start gap-2">
+                      {/* Comment avatar */}
+                      <div className="w-6 h-6 rounded-full bg-emerald-500/40 flex items-center justify-center text-gray-400 text-[10px] font-semibold flex-shrink-0 mt-0.5">
+                        {(c.profiles?.username ?? "?")[0].toUpperCase()}
                       </div>
-                      <p className="text-xs text-gray-300 leading-relaxed\">{c.body}</p>
+                      <div className="flex-1 bg-black/20 border border-white/5 rounded-lg px-3 py-2">
+                        <div className="flex items-center justify-between gap-2 mb-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-gray-300">{c.profiles?.username ?? "anonymous"}</span>
+                            <span className="text-[10px] text-gray-500">{timeAgo(c.created_at)}</span>
+                          </div>
+
+                          {/* Comment edit/delete controls (comment owner only) */}
+                          {isCommentOwner && !isEditing && (
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleEditCommentStart(c)}
+                                className="text-[10px] text-gray-500 hover:text-yellow-400 transition-colors flex items-center gap-1"
+                              >
+                                <Edit3 size={10} />
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => onDeleteComment(c.id)}
+                                className="text-[10px] text-gray-500 hover:text-red-400 transition-colors flex items-center gap-1"
+                              >
+                                <Trash2 size={10} />
+                                Delete
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Save/cancel when editing */}
+                          {isEditing && (
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleEditCommentSave(c.id)}
+                                disabled={!editingCommentText.trim()}
+                                className="text-[10px] text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1 disabled:opacity-40"
+                              >
+                                <Check size={10} />
+                                Save
+                              </button>
+                              <button
+                                onClick={handleEditCommentCancel}
+                                className="text-[10px] text-gray-500 hover:text-gray-300 transition-colors flex items-center gap-1"
+                              >
+                                <X size={10} />
+                                Cancel
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Comment body or edit input */}
+                        {isEditing ? (
+                          <input
+                            autoFocus
+                            value={editingCommentText}
+                            onChange={(e) => setEditingCommentText(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") handleEditCommentSave(c.id)
+                              if (e.key === "Escape") handleEditCommentCancel()
+                            }}
+                            className="w-full mt-1 px-2 py-1 bg-black/40 border border-emerald-500/40 rounded text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
+                          />
+                        ) : (
+                          <p className="text-xs text-gray-300 leading-relaxed">{c.body}</p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
             </div>
           )}
 
           {/* Empty comments state */}
           {showComments && comments.length === 0 && (
-            <p className="mt-3 text-xs text-gray-500 italic\">No comments yet. Be the first!</p>
+            <p className="mt-3 text-xs text-gray-500 italic">No comments yet. Be the first!</p>
           )}
         </div>
       </div>
@@ -375,6 +459,24 @@ export default function Forum() {
     }
   }
 
+  async function handleEditComment(commentId, body) {
+    try {
+      await updateComment(commentId, body)
+      loadPosts()
+    } catch {
+      console.error("Edit comment failed")
+    }
+  }
+
+  async function handleDeleteComment(commentId) {
+    try {
+      await deleteComment(commentId)
+      loadPosts()
+    } catch {
+      console.error("Delete comment failed")
+    }
+  }
+
   const handleLogout = async () => {
     await logout()
     navigate("/login")
@@ -434,8 +536,8 @@ export default function Forum() {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${
-                  activeTab === tab 
-                    ? "bg-emerald-500 text-white shadow-lg" 
+                  activeTab === tab
+                    ? "bg-emerald-500 text-white shadow-lg"
                     : "bg-black/20 text-gray-400 border border-white/10 hover:text-white hover:border-emerald-500/50"
                 }`}
               >
@@ -482,6 +584,8 @@ export default function Forum() {
                   onDelete={handleDelete}
                   onEdit={(post) => setEditTarget(post)}
                   onComment={handleComment}
+                  onEditComment={handleEditComment}
+                  onDeleteComment={handleDeleteComment}
                 />
               ))
             )}

@@ -124,3 +124,26 @@ export const deletePost = async (postId, userId) => {
 
   if (error) throw error
 }
+
+export const updateComment = async (commentId, userId, body) => {
+  const { data, error } = await supabase
+    .from("forum_comments")
+    .update({ body })
+    .eq("id", commentId)
+    .eq("user_id", userId) // ownership check
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const deleteComment = async (commentId, userId) => {
+  const { error } = await supabase
+    .from("forum_comments")
+    .delete()
+    .eq("id", commentId)
+    .eq("user_id", userId) // ownership check
+
+  if (error) throw error
+}

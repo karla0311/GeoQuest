@@ -72,3 +72,30 @@ export const removePost = async (req, res) => {
     res.status(500).json({ error: "Failed to delete post" })
   }
 }
+
+export const editComment = async (req, res) => {
+  try {
+    const userId = req.user.id
+    const { id } = req.params
+    const { body } = req.body
+
+    const comment = await forumService.updateComment(id, userId, body)
+    res.json(comment)
+  } catch (err) {
+    console.error("editComment error:", err)
+    res.status(500).json({ error: "Failed to edit comment" })
+  }
+}
+
+export const removeComment = async (req, res) => {
+  try {
+    const userId = req.user.id
+    const { id } = req.params
+
+    await forumService.deleteComment(id, userId)
+    res.json({ success: true })
+  } catch (err) {
+    console.error("removeComment error:", err)
+    res.status(500).json({ error: "Failed to delete comment" })
+  }
+}
