@@ -50,7 +50,7 @@ const Stage3Capital = () => {
       }
     });
 
-    // second pass: find present letters (yellow)
+    // second pass: find present letters (blue)
     guessArr.forEach((char, i) => {
       if (char && solutionArr.includes(char)) {
         statuses[i] = "present";
@@ -151,7 +151,7 @@ const Stage3Capital = () => {
   const getKeyStyle = (letter) => {
     const status = letterStatuses[letter];
     if (status === 'correct') return "bg-emerald-500 text-white border-transparent";
-    if (status === 'present') return "bg-yellow-500 text-white border-transparent";
+    if (status === 'present') return "bg-blue-800 text-white border-transparent";
     if (status === 'absent') return "bg-zinc-900 text-zinc-600 border-transparent opacity-50";
     return "bg-zinc-800 text-white border-white/10 hover:bg-zinc-700";
   };
@@ -168,7 +168,7 @@ const Stage3Capital = () => {
       <StarFieldBackground />
       
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-white uppercase tracking-widest">Capital Wordle</h1>
+        <h1 className="text-2xl font-bold text-white uppercase tracking-widest">Guess the Capital</h1>
         <p className="text-gray-400">What is the capital of <span className="text-emerald-400 font-bold">{countryName}</span>?</p>
       </div>
 
@@ -191,7 +191,7 @@ const Stage3Capital = () => {
                 if (isPastRow) {
                   const status = rowStatuses[colIndex];
                   if (status === "correct") statusClass = "bg-emerald-500 border-emerald-600 text-white";
-                  else if (status === "present") statusClass = "bg-yellow-500 border-yellow-600 text-white";
+                  else if (status === "present") statusClass = "bg-blue-800 border-blue-900 text-white";
                   else statusClass = "bg-zinc-700 border-zinc-800 text-zinc-400";
                 } else if (isCurrentRow && char) {
                   statusClass = "bg-white/10 border-white/30 text-white scale-105";
