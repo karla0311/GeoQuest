@@ -123,7 +123,7 @@ useEffect(() => {
       polyProps.NAME?.toLowerCase() === targetName ||
       polyProps.NAME_LONG?.toLowerCase() === targetName;
 
-    if (isCorrect) {
+if (isCorrect) {
       const finalGuesses = [...guesses, { feature: polygon, correct: true }];
       setGuesses(finalGuesses);
       setWon(true);
@@ -132,11 +132,13 @@ useEffect(() => {
       setTimeout(() => {
         navigate("/stage3", { 
           state: { 
-          name: state.country || state.name, 
-          capital: state.capital,
-          flagUrl: state.flagUrl,
-          code: state.code,
-          is_daily: is_daily,
+            country: {
+              name: state.country || state.name, 
+              capital: state.capital,
+              flagUrl: state.flagUrl,
+              code: state.code,
+            },
+            is_daily: is_daily,
             score: (state.score || 0) + 100
           } 
         });
@@ -158,8 +160,22 @@ useEffect(() => {
       setDone(true);
       setWon(false);
       saveResult(false, updatedGuesses.length);
-      setTimeout(() => navigate("/results", { state: { is_daily: is_daily } }), 2500);
-    }
+        
+      setTimeout(() => {
+        navigate("/stage3", { 
+          state: { 
+            country: {
+              name: state.country || state.name,
+              capital: state.capital,
+              flagUrl: state.flagUrl,
+              code: state.code,
+            },
+            is_daily: is_daily,
+            score: state.score || 0 
+          } 
+        });
+      }, 2500);
+    }  
   }
 
   const getPolygonColor = (polygon) => {

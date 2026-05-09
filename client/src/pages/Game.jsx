@@ -265,6 +265,8 @@ const handleGuess = () => {
         state: { 
           country: country.name, 
           flagUrl: country.flagUrl,
+          code: country.code,
+          capital: country.capital,
           is_daily: is_daily 
         } 
       })
