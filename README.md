@@ -1,8 +1,59 @@
 # GeoQuest
 
-Geography quiz game built with React and Express.
+A multi-stage Geography quiz game!
 
-## Setup
+---
+
+## 📌  Overview
+
+**GeoQuest** is a full-stack, multi-stage geography game for geography enthusiasts and students who need an engaging, interactive way to test & improve their global knowledge. GeoQuest is a "gamified learning environment." That challenges you via flag, coordinate, & capital recognition. Unlike other geography games and trainers, our product offers a dynamic, competitive, multi-stage gameplay loop that tracks your journey to mastery
+
+---
+
+## ✨ Features
+
+### Multi-stage Gameplay
+- Daily play and practice mode
+- First stage: Flag identification
+- Second stage: Map pinpointing
+- Third stage: Guess the capital 
+
+### Register & Login
+- Secure register with Supabase 
+
+### Forum Page
+- Post onto forum page to interact with other users
+- Toggle through posts with `Latest`, `Hottest`, `Unanswered` or through tags
+- Comment or upvote on other users post
+
+### Analytics & Leaderboard 
+- Detailed stats of user gameplay: Accuracy, Score, and games played
+- Compare scores with Top 10 Leaderboard (Daily and Practice mode) 
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- React  
+- Tailwind CSS  
+- React Router  
+- Context API  
+
+### Backend
+- Node.js  
+- Express.js  
+
+### Database
+- Supabase  
+
+### Other Tools
+- GitHub  
+- .env  
+
+---
+
+## 📂 Project Setup
 
 Requires Node 18+.
 
@@ -31,3 +82,5 @@ Create a `client/.env` file with your Supabase credentials:
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_anon_key
 ```
+
+
