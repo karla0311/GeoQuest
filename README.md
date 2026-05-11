@@ -2,11 +2,13 @@
 
 A multi-stage Geography quiz game!
 
+Repository Link: https://github.com/karla0311/GeoQuest
+
 ---
 
 ## 📌  Overview
 
-**GeoQuest** is a full-stack, multi-stage geography game for geography enthusiasts and students who need an engaging, interactive way to test & improve their global knowledge. GeoQuest is a "gamified learning environment." That challenges you via flag, coordinate, & capital recognition. Unlike other geography games and trainers, our product offers a dynamic, competitive, multi-stage gameplay loop that tracks your journey to mastery
+**GeoQuest** is a full-stack, multi-stage geography game for geography enthusiasts and students who need an engaging, interactive way to test & improve their global knowledge. Our game is a "gamified learning environment" that challenges you via flag identification, coordinate pinpointing, & capital recognition. Unlike other geography games and trainers, our product offers a dynamic, competitive, multi-stage gameplay loop that tracks your journey to mastery!
 
 ---
 
@@ -18,10 +20,12 @@ A multi-stage Geography quiz game!
 - Second stage: Map pinpointing
 - Third stage: Guess the capital 
 
-### Register & Login
-- Secure register with Supabase 
+### User Authentication
+- Secure register and login/logout
+- Password encryption
+- Session management 
 
-### Forum Page
+### Community Forum Page
 - Post onto forum page to interact with other users
 - Toggle through posts with `Latest`, `Hottest`, `Unanswered` or through tags
 - Comment or upvote on other users post
